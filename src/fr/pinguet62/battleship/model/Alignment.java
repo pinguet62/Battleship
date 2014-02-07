@@ -5,6 +5,8 @@ import fr.pinguet62.battleship.model.boat.Boat;
 /** The {@link Boat} alignment. */
 public enum Alignment {
 
-	VERTICAL, HORIZONTAL;
+    /** Horizontal alignment. */
+    HORIZONTAL, /** Vertical alignment. */
+    VERTICAL;
 
 }

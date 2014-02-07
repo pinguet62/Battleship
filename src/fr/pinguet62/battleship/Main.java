@@ -10,11 +10,11 @@ import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 
 public final class Main {
 
-	public static void main(String[] args) {
-		// new ParametersView();
+    public static void main(final String[] args) {
+	// new ParametersView();
 
-		new FleetPositioningView(15, 10, Arrays.asList(new AircraftCarrier(),
-				new Destroyer(), new Destroyer(), new Submarine(),
-				new TorpedoBoat()));
-	}
+	new FleetPositioningView(15, 10, Arrays.asList(new AircraftCarrier(),
+		new Destroyer(), new Destroyer(), new Submarine(),
+		new TorpedoBoat()));
+    }
 }

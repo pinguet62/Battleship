@@ -4,18 +4,35 @@ import java.io.Serializable;
 
 import fr.pinguet62.battleship.model.grid.Coordinates;
 
+/**
+ * Store informations about an attack.<br />
+ * Sent to opponent player.
+ */
 public class Attack implements Serializable {
 
-	private static final long serialVersionUID = 4311698328134751924L;
+    /** Serial version UID. */
+    private static final long serialVersionUID = 4311698328134751924L;
 
-	private Coordinates coordinates;
+    /** The {@link Coordinates} of the attack. */
+    private final Coordinates coordinates;
 
-	public Attack(Coordinates coordinates) {
-		this.coordinates = coordinates;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param coordinates
+     *            The {@link Coordinates} of the attack.
+     */
+    public Attack(final Coordinates coordinates) {
+	this.coordinates = coordinates;
+    }
 
-	public Coordinates getCoordinates() {
-		return coordinates;
-	}
+    /**
+     * Gets the {@link Coordinates} of the attack.
+     * 
+     * @return The {@link Coordinates} of the attack.
+     */
+    public Coordinates getCoordinates() {
+	return coordinates;
+    }
 
 }

@@ -1,35 +1,69 @@
 package fr.pinguet62.battleship.model.grid;
 
+/** Coordinates in grid. */
 public final class Coordinates {
 
-	private int x;
+    /** The horizontal index. */
+    private int x;
 
-	private int y;
+    /** The vertical index. */
+    private int y;
 
-	public Coordinates(final int x, final int y) {
-		this.x = x;
-		this.y = y;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param x
+     *            The horizontal index.
+     * @param y
+     *            The vertical index.
+     */
+    public Coordinates(final int x, final int y) {
+	this.x = x;
+	this.y = y;
+    }
 
-	public int getX() {
-		return x;
-	}
+    /**
+     * Gets the horizontal index.
+     * 
+     * @return The horizontal index.
+     */
+    public int getX() {
+	return x;
+    }
 
-	public void setX(int x) {
-		this.x = x;
-	}
+    /**
+     * Gets the vertical index.
+     * 
+     * @return The vertical index.
+     */
+    public int getY() {
+	return y;
+    }
 
-	public int getY() {
-		return y;
-	}
+    /**
+     * Sets the horizontal index.
+     * 
+     * @param x
+     *            The horizontal index.
+     */
+    public void setX(final int x) {
+	this.x = x;
+    }
 
-	public void setY(int y) {
-		this.y = y;
-	}
+    /**
+     * Sets the vertical index.
+     * 
+     * @param y
+     *            The vertical index.
+     */
+    public void setY(final int y) {
+	this.y = y;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("x=%d ; y=%d", x, y);
-	}
+    /** Gets the {@link String} representation. */
+    @Override
+    public String toString() {
+	return String.format("x=%d ; y=%d", x, y);
+    }
 
 }
