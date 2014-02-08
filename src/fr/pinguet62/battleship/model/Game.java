@@ -6,11 +6,11 @@ import java.util.List;
 
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Fleet;
-import fr.pinguet62.battleship.view.parameters.BoatEntry;
+import fr.pinguet62.battleship.view.parameters.BoatClassSpinner;
 
 public final class Game {
 
-	private final Collection<BoatEntry> boatEntries;
+	private final Collection<BoatClassSpinner> boatEntries;
 
 	private List<Boat> boats = new ArrayList<Boat>();
 
@@ -23,7 +23,7 @@ public final class Game {
 	private final int width;
 
 	public Game(final int width, final int height,
-			final Collection<BoatEntry> boatEntries) {
+			final Collection<BoatClassSpinner> boatEntries) {
 		this.width = width;
 		this.height = height;
 		this.boatEntries = boatEntries;
