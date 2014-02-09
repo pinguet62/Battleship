@@ -1,6 +1,5 @@
-package fr.pinguet62.battleship.view;
+package fr.pinguet62.battleship.view.game;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -14,18 +13,16 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
 import fr.pinguet62.battleship.model.Game;
-import fr.pinguet62.battleship.model.grid.Box;
 import fr.pinguet62.battleship.model.grid.Coordinates;
+import fr.pinguet62.battleship.view.game.BoxView.State;
 
-public final class View implements ActionListener {
-
-    private BoxView[][] fleet;
+public final class GameView implements ActionListener {
 
     private final JFrame frame = new JFrame("Battleship");
 
     private final Game game;
 
-    public View(final Game model) {
+    public GameView(final Game model) {
 	game = model;
 
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,7 +47,6 @@ public final class View implements ActionListener {
 	for (int y = 0; y < game.getHeight(); y++)
 	    for (int x = 0; x < game.getWidth(); x++) {
 		BoxView button = new BoxView(new Coordinates(x, y));
-		button.setBackground(BoxView.WATER);
 		button.addActionListener(this);
 		gridFleetPanel.add(button);
 	    }
@@ -74,7 +70,6 @@ public final class View implements ActionListener {
 	for (int y = 0; y < game.getHeight(); y++)
 	    for (int x = 0; x < game.getWidth(); x++) {
 		BoxView button = new BoxView(new Coordinates(x, y));
-		button.setBackground(BoxView.WATER);
 		button.setEnabled(false);
 		gridOpponenPanel.add(button);
 	    }
@@ -84,26 +79,23 @@ public final class View implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
-	BoxView boxView = (BoxView) e.getSource();
+    public void actionPerformed(final ActionEvent event) {
+	BoxView boxView = (BoxView) event.getSource();
 	Coordinates coordinates = boxView.getCoordinates();
 	boolean touched = game.getFleet().getBox(coordinates).attack();
-	boxView.setBackground(touched ? BoxView.TOUCHED : BoxView.FAILED);
-	boxView.setEnabled(false);
+	boxView.setState(touched ? State.TOUCHED : State.FAILED);
     }
 
-    public void refreshFleet(final Coordinates coordinates) {
-	if (coordinates == null)
-	    throw new IllegalArgumentException("Coordinates null.");
-	for (BoxView[] boxViews : fleet)
-	    for (BoxView boxView : boxViews)
-		if (coordinates.equals(boxView.getCoordinates())) {
-		    Box target = game.getFleet().getBox(coordinates);
-		    Color color = BoxView.getColor(target);
-		    boxView.setBackground(color);
-		    return;
-		}
-	throw new IllegalArgumentException("Coordinates not found.");
-    }
+    // public void refreshFleet(final Coordinates coordinates) {
+    // for (BoxView[] boxViews : fleet)
+    // for (BoxView boxView : boxViews)
+    // if (boxView.getCoordinates().equals(coordinates)) {
+    // Box target = game.getFleet().getBox(coordinates);
+    // Color color = BoxView.getState().getColor(target);
+    // boxView.setBackground(color);
+    // return;
+    // }
+    // throw new IllegalArgumentException("Coordinates not found.");
+    // }
 
 }

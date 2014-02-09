@@ -1,23 +1,23 @@
-package fr.pinguet62.battleship.view.positioning;
+package fr.pinguet62.battleship.view.game;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.Arrays;
 
 import javax.swing.JButton;
 
+import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 
-/**
- * Selectable case in grid.<br />
- * Used to place boat in grid.
- */
-public final class SelectCase extends JButton {
+/** A box in grid. */
+public final class BoxView extends JButton {
 
-    /** The state of a {@link SelectCase}. */
+    /** The state of a {@link BoxView}. */
     public static enum State {
-	BOAT(Color.RED), CHOOSED(Color.GREEN), SELECTABLE(Color.BLUE), UNSELECTABLE(
-		Color.BLACK);
+
+	/** Attack was out of {@link Boat}. */
+	FAILED(Color.BLACK), /** The attack touched a {@link Boat}. */
+	TOUCHED(Color.RED), /** Not attack in this {@link BoxView}. */
+	WATER(Color.BLUE);
 
 	/** The {@link Color}. */
 	private final Color color;
@@ -44,13 +44,13 @@ public final class SelectCase extends JButton {
     }
 
     /** Serial version UID. */
-    private static final long serialVersionUID = -1587352033892307692L;
+    private static final long serialVersionUID = -4404473579692189048L;
 
     /** The {@link Coordinates}. */
     private final Coordinates coordinates;
 
     /** The {@link State}. */
-    private State state = State.SELECTABLE;
+    private State state = State.WATER;
 
     /**
      * Constructor.
@@ -58,7 +58,8 @@ public final class SelectCase extends JButton {
      * @param coordinates
      *            The {@link Coordinates}.
      */
-    public SelectCase(final Coordinates coordinates) {
+    public BoxView(final Coordinates coordinates) {
+	super(String.format("(%d;%d)", coordinates.getX(), coordinates.getY()));
 	this.coordinates = coordinates;
 	setPreferredSize(new Dimension(30, 30));
     }
@@ -88,8 +89,7 @@ public final class SelectCase extends JButton {
      *            The {@link State}.
      */
     public void setState(final State state) {
-	setEnabled(Arrays.asList(State.CHOOSED, State.SELECTABLE).contains(
-		state));
+	setEnabled(state.equals(State.WATER));
 	this.state = state;
 	setBackground(state.getColor());
     }

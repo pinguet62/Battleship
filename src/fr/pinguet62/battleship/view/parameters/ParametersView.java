@@ -4,11 +4,10 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -31,10 +30,11 @@ import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 public final class ParametersView {
 
     /** The available {@link Boat} types. */
-    private final Collection<Class<? extends Boat>> boatClasses = Arrays
-	    .asList(AircraftCarrier.class, Cruiser.class, Destroyer.class,
-		    TorpedoBoat.class, Submarine.class);
+    private final Collection<Class<? extends Boat>> boatClasses = new HashSet<>(
+	    Arrays.asList(AircraftCarrier.class, Cruiser.class,
+		    Destroyer.class, TorpedoBoat.class, Submarine.class));
 
+    /** The {@link BoatClassSpinner}s. */
     private final Collection<BoatClassSpinner> boatClassSpinners = new ArrayList<>();
 
     /** Constructor. */
@@ -97,28 +97,15 @@ public final class ParametersView {
 
 		Collection<Boat> boats = new ArrayList<>();
 		for (BoatClassSpinner boatClassSpinner : boatClassSpinners)
-		    for (int i = 0; i < boatClassSpinner.getIntValue(); i++)
-			try {
-			    Class<? extends Boat> boatClass = boatClassSpinner
-				    .getBoatClass();
-			    Constructor<? extends Boat> defaultConstructor = boatClass
-				    .getConstructor();
-			    Boat boat = defaultConstructor.newInstance();
-			    boats.add(boat);
-			} catch (NoSuchMethodException | SecurityException
-				| InstantiationException
-				| IllegalAccessException
-				| IllegalArgumentException
-				| InvocationTargetException exception) {
-			    exception.printStackTrace();
-			}
+		    for (int i = 0; i < boatClassSpinner.getIntValue(); i++) {
+			Class<? extends Boat> boatClass = boatClassSpinner
+				.getBoatClass();
+			Boat boat = Boat.getInstance(boatClass);
+			boats.add(boat);
+		    }
 
 		new FleetPositioningView((Integer) valueWidthSize.getValue(),
 			(Integer) valueHeightSize.getValue(), boats);
-		// Game model = new Game((Integer) valueWidthSize.getValue(),
-		// (Integer) valueHeightSize.getValue(), null);
-		// View view = new View(model);
-		// new Controller(model, view);
 		frame.dispose();
 	    }
 	});

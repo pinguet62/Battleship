@@ -1,11 +1,41 @@
 package fr.pinguet62.battleship.model.boat;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
+
 import fr.pinguet62.battleship.model.Alignment;
 import fr.pinguet62.battleship.model.grid.Box;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 
 /** The abstract boat. */
 public abstract class Boat {
+
+    /** The {@link Logger}. */
+    private static final Logger LOGGGER = Logger
+	    .getLogger(Boat.class.getName());
+
+    /**
+     * Gets an instance of the {@link Boat} {@link Class}, <code>null</code> if
+     * an error occurs.<br />
+     * Use reflection to invoke default constructor.
+     * 
+     * @param boatClass
+     *            The {@link Boat} {@link Class}.
+     * @return The {@link Boat} instance.
+     */
+    public static Boat getInstance(final Class<? extends Boat> boatClass) {
+	try {
+	    Constructor<? extends Boat> defaultConstructor = boatClass
+		    .getConstructor();
+	    return defaultConstructor.newInstance();
+	} catch (NoSuchMethodException | SecurityException
+		| InstantiationException | IllegalAccessException
+		| IllegalArgumentException | InvocationTargetException exception) {
+	    Boat.LOGGGER.severe(exception.getMessage());
+	    return null;
+	}
+    }
 
     /** The {@link Alignment}. */
     private final Alignment alignment;
