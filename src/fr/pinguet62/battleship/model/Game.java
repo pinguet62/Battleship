@@ -1,52 +1,85 @@
 package fr.pinguet62.battleship.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Fleet;
-import fr.pinguet62.battleship.view.parameters.BoatClassSpinner;
+import fr.pinguet62.battleship.model.socket.ThreadSocket;
 
+/** General model of this game. */
 public final class Game {
 
-	private final Collection<BoatClassSpinner> boatEntries;
+    /** The height. */
+    private final int height;
 
-	private List<Boat> boats = new ArrayList<Boat>();
+    /** The current user's {@link Fleet}. */
+    private final Fleet myFleet;
 
-	private Fleet fleet = new Fleet(this);
+    /** The opponent user's {@link Fleet}. */
+    private final Fleet opponentFleet;
 
-	private final int height;
+    /** The {@link ThreadSocket}. */
+    private final ThreadSocket threadSocket = new ThreadSocket();
 
-	private Fleet opponent;
+    /** The width. */
+    private final int width;
 
-	private final int width;
+    /**
+     * Constructor.
+     * 
+     * @param width
+     *            The width.
+     * @param height
+     *            The height.
+     */
+    public Game(final int width, final int height) {
+	this.width = width;
+	this.height = height;
 
-	public Game(final int width, final int height,
-			final Collection<BoatClassSpinner> boatEntries) {
-		this.width = width;
-		this.height = height;
-		this.boatEntries = boatEntries;
-	}
+	myFleet = new Fleet(this);
+	opponentFleet = new Fleet(this);
+    }
 
-	public List<Boat> getBoats() {
-		return boats;
-	}
+    /**
+     * Gets the height.
+     * 
+     * @return The height.
+     */
+    public int getHeight() {
+	return height;
+    }
 
-	public Fleet getFleet() {
-		return fleet;
-	}
+    /**
+     * Gets the current user's {@link Fleet}.
+     * 
+     * @return The {@link Fleet}.
+     */
+    public Fleet getMyFleet() {
+	return myFleet;
+    }
 
-	public int getHeight() {
-		return height;
-	}
+    /**
+     * Gets the opponent user's {@link Fleet}.
+     * 
+     * @return The {@link Fleet}.
+     */
+    public Fleet getOpponentFleet() {
+	return opponentFleet;
+    }
 
-	public Fleet getOpponent() {
-		return opponent;
-	}
+    /**
+     * Gets the {@link ThreadSocket}.
+     * 
+     * @return The {@link ThreadSocket}.
+     */
+    public ThreadSocket getThreadSocket() {
+	return threadSocket;
+    }
 
-	public int getWidth() {
-		return width;
-	}
+    /**
+     * Gets the width.
+     * 
+     * @return The width.
+     */
+    public int getWidth() {
+	return width;
+    }
 
 }

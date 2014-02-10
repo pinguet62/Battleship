@@ -10,14 +10,19 @@ import javax.swing.JFrame;
 
 import fr.pinguet62.battleship.view.parameters.ParametersView;
 
-public final class PlayerTypeChoiceView {
+/** First view: choice between host and guest. */
+public final class PlayerTypeChoiceView extends JFrame {
 
+    /** Serial version UID. */
+    private static final long serialVersionUID = 8779709289758249345L;
+
+    /** Constructor. */
     public PlayerTypeChoiceView() {
-	final JFrame frame = new JFrame("Player type");
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	super("Player type");
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	// Layout
-	Container mainContainer = frame.getContentPane();
+	Container mainContainer = getContentPane();
 	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.X_AXIS));
 	// Host
 	JButton hostButton = new JButton("Host");
@@ -25,7 +30,7 @@ public final class PlayerTypeChoiceView {
 	    @Override
 	    public void actionPerformed(final ActionEvent event) {
 		new ParametersView();
-		frame.dispose();
+		dispose();
 	    }
 	});
 	mainContainer.add(hostButton);
@@ -39,8 +44,8 @@ public final class PlayerTypeChoiceView {
 	});
 	mainContainer.add(guestButton);
 
-	frame.pack();
-	frame.setVisible(true);
+	pack();
+	setVisible(true);
     }
 
 }

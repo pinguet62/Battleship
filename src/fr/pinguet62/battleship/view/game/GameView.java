@@ -14,7 +14,6 @@ import javax.swing.SwingConstants;
 
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.grid.Coordinates;
-import fr.pinguet62.battleship.view.game.BoxView.State;
 
 public final class GameView implements ActionListener {
 
@@ -80,10 +79,10 @@ public final class GameView implements ActionListener {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-	BoxView boxView = (BoxView) event.getSource();
-	Coordinates coordinates = boxView.getCoordinates();
-	boolean touched = game.getFleet().getBox(coordinates).attack();
-	boxView.setState(touched ? State.TOUCHED : State.FAILED);
+	// BoxView boxView = (BoxView) event.getSource();
+	// Coordinates coordinates = boxView.getCoordinates();
+	// boolean touched = game.getFleet().getBox(coordinates).attack();
+	// boxView.setState(touched ? State.TOUCHED : State.FAILED);
     }
 
     // public void refreshFleet(final Coordinates coordinates) {

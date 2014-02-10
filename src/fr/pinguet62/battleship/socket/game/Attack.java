@@ -1,4 +1,4 @@
-package fr.pinguet62.battleship.socket;
+package fr.pinguet62.battleship.socket.game;
 
 import java.io.Serializable;
 

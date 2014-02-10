@@ -13,13 +13,14 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
-import fr.pinguet62.battleship.model.grid.Fleet;
 import fr.pinguet62.battleship.view.positioning.SelectCase.State;
 
 /** View used to place {@link Boat}s in grid. */
-public final class FleetPositioningView implements ActionListener {
+public final class FleetPositioningView extends JFrame implements
+	ActionListener {
 
     private enum Direction {
 
@@ -77,6 +78,9 @@ public final class FleetPositioningView implements ActionListener {
 
     }
 
+    /** Serial version UID. */
+    private static final long serialVersionUID = 8676896327347418615L;
+
     /** The {@link JPanel} of {@link BoatView}s. */
     final JPanel boatsPanel;
 
@@ -86,14 +90,11 @@ public final class FleetPositioningView implements ActionListener {
     /** The grid of {@link SelectCase}s. */
     private final SelectCase[][] casess;
 
-    /** The {@link JFrame}. */
-    private final JFrame frame = new JFrame("Fleet Positioning");
+    /** The {@link Game}. */
+    private final Game game;
 
     /** The {@link JPanel}. */
     private final JPanel gridFleetPanel;
-
-    /** The height. */
-    private final int height;
 
     /** The selected {@link Boat}. */
     private Boat selectedBoat;
@@ -101,28 +102,23 @@ public final class FleetPositioningView implements ActionListener {
     /** The selected {@link BoatView}. */
     private BoatView selectedBoatView;
 
-    /** The width. */
-    private final int width;
-
     /**
      * Constructor.
      * 
-     * @param width
-     *            The width of {@link Fleet}.
-     * @param height
-     *            The height of {@link Fleet}.
+     * @param game
+     *            The {@link Game}.
      * @param boats
-     *            The {@link Boat}s.
+     *            The {@link Boat}s to place.
      */
-    public FleetPositioningView(final int width, final int height,
-	    final Collection<Boat> boats) {
-	this.width = width;
-	this.height = height;
+    public FleetPositioningView(final Game game, final Collection<Boat> boats) {
+	super("Fleet Positioning");
 
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	this.game = game;
+
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	// Layout
-	Container mainContainer = frame.getContentPane();
+	Container mainContainer = getContentPane();
 	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.X_AXIS));
 	// - Boats
 	boatsPanel = new JPanel();
@@ -146,20 +142,21 @@ public final class FleetPositioningView implements ActionListener {
 	}
 	// - Grid
 	gridFleetPanel = new JPanel();
-	gridFleetPanel.setLayout(new GridLayout(height, width));
+	gridFleetPanel.setLayout(new GridLayout(game.getHeight(), game
+		.getWidth()));
 	mainContainer.add(gridFleetPanel);
 	// -- Buttons
-	casess = new SelectCase[height][width];
-	for (int y = 0; y < height; y++)
-	    for (int x = 0; x < width; x++) {
+	casess = new SelectCase[game.getHeight()][game.getWidth()];
+	for (int y = 0; y < game.getHeight(); y++)
+	    for (int x = 0; x < game.getWidth(); x++) {
 		SelectCase button = new SelectCase(new Coordinates(x, y));
 		button.addActionListener(this);
 		gridFleetPanel.add(button);
 		casess[y][x] = button;
 	    }
 
-	frame.pack();
-	frame.setVisible(true);
+	pack();
+	setVisible(true);
     }
 
     /**
@@ -218,8 +215,8 @@ public final class FleetPositioningView implements ActionListener {
 	    final Direction dir, final int size) {
 	int x = coordinates.getX();
 	int y = coordinates.getY();
-	while (((0 <= x) && (x < width))
-		&& ((0 <= y) && (y < height))
+	while (((0 <= x) && (x < game.getWidth()))
+		&& ((0 <= y) && (y < game.getHeight()))
 		&& !casess[y][x].getState().equals(State.BOAT)
 		&& ((Math.abs(x - coordinates.getX()) + Math.abs(y
 			- coordinates.getY())) < size)) {
@@ -241,8 +238,8 @@ public final class FleetPositioningView implements ActionListener {
      */
     private List<SelectCase> getSelectedCases(final State state) {
 	List<SelectCase> selectedCases = new ArrayList<SelectCase>();
-	for (int j = 0; j < height; j++)
-	    for (int i = 0; i < width; i++)
+	for (int j = 0; j < game.getHeight(); j++)
+	    for (int i = 0; i < game.getWidth(); i++)
 		if (casess[j][i].getState().equals(state))
 		    selectedCases.add(casess[j][i]);
 	return selectedCases;
@@ -251,23 +248,23 @@ public final class FleetPositioningView implements ActionListener {
     /** Refresh the grid. */
     private void refresh() {
 	// Reset selection
-	for (int j = 0; j < height; j++)
-	    for (int i = 0; i < width; i++)
+	for (int j = 0; j < game.getHeight(); j++)
+	    for (int i = 0; i < game.getWidth(); i++)
 		if (!Arrays.asList(State.BOAT, State.CHOOSED).contains(
 			casess[j][i].getState()))
 		    casess[j][i].setState(State.SELECTABLE);
 
 	// Choosed cases
 	List<SelectCase> selectedCases = new ArrayList<SelectCase>();
-	for (int j = 0; j < height; j++)
-	    for (int i = 0; i < width; i++)
+	for (int j = 0; j < game.getHeight(); j++)
+	    for (int i = 0; i < game.getWidth(); i++)
 		if (casess[j][i].getState().equals(State.CHOOSED))
 		    selectedCases.add(casess[j][i]);
 
 	// 0 selection
 	if (selectedCases.size() == 0) {
-	    for (int j = 0; j < height; j++)
-		for (int i = 0; i < width; i++)
+	    for (int j = 0; j < game.getHeight(); j++)
+		for (int i = 0; i < game.getWidth(); i++)
 		    if (!casess[j][i].getState().equals(State.BOAT))
 			casess[j][i].setState(State.SELECTABLE);
 	} else // 1 selection : cross
@@ -276,8 +273,8 @@ public final class FleetPositioningView implements ActionListener {
 	    final int x = selected.getX();
 	    final int y = selected.getY();
 	    // Complementary to the cross
-	    for (int j = 0; j < height; j++)
-		for (int i = 0; i < width; i++)
+	    for (int j = 0; j < game.getHeight(); j++)
+		for (int i = 0; i < game.getWidth(); i++)
 		    if ((i != x) && (j != y))
 			if (casess[j][i].getState().equals(State.SELECTABLE))
 			    casess[j][i].setState(State.UNSELECTABLE);
@@ -292,7 +289,7 @@ public final class FleetPositioningView implements ActionListener {
 		    casess[selected.getY()][i].setState(State.UNSELECTABLE);
 	    for (int i = left; i <= right; i++) {
 	    }
-	    for (int i = right + 1; i < width; i++)
+	    for (int i = right + 1; i < game.getWidth(); i++)
 		if (!casess[selected.getY()][i].getState().equals(State.BOAT))
 		    casess[selected.getY()][i].setState(State.UNSELECTABLE);
 	    // - vertical
@@ -305,7 +302,7 @@ public final class FleetPositioningView implements ActionListener {
 		    casess[j][selected.getX()].setState(State.UNSELECTABLE);
 	    for (int j = top; j <= bottom; j++) {
 	    }
-	    for (int j = bottom + 1; j < height; j++)
+	    for (int j = bottom + 1; j < game.getHeight(); j++)
 		if (!casess[j][selected.getX()].getState().equals(State.BOAT))
 		    casess[j][selected.getX()].setState(State.UNSELECTABLE);
 	}
@@ -318,9 +315,9 @@ public final class FleetPositioningView implements ActionListener {
 	    if (first.getY() == last.getY()) {
 		final int y = first.getY();
 		// Out of line
-		for (int j = 0; j < height; j++)
+		for (int j = 0; j < game.getHeight(); j++)
 		    if (j != y)
-			for (int i = 0; i < width; i++)
+			for (int i = 0; i < game.getWidth(); i++)
 			    if (!casess[j][i].getState().equals(State.BOAT))
 				casess[j][i].setState(State.UNSELECTABLE);
 		// Join
@@ -336,7 +333,7 @@ public final class FleetPositioningView implements ActionListener {
 			casess[y][i].setState(State.UNSELECTABLE);
 		for (int i = left; i <= right; i++) {
 		}
-		for (int i = right + 1; i < width; i++)
+		for (int i = right + 1; i < game.getWidth(); i++)
 		    if (!casess[y][i].getState().equals(State.BOAT))
 			casess[y][i].setState(State.UNSELECTABLE);
 	    }
@@ -344,9 +341,9 @@ public final class FleetPositioningView implements ActionListener {
 	    else {
 		final int x = first.getX();
 		// Out of column
-		for (int i = 0; i < width; i++)
+		for (int i = 0; i < game.getWidth(); i++)
 		    if (i != x)
-			for (int j = 0; j < height; j++)
+			for (int j = 0; j < game.getHeight(); j++)
 			    if (!casess[j][i].getState().equals(State.BOAT))
 				casess[j][i].setState(State.UNSELECTABLE);
 		// Join
@@ -362,7 +359,7 @@ public final class FleetPositioningView implements ActionListener {
 			casess[j][x].setState(State.UNSELECTABLE);
 		for (int j = top; j <= bottom; j++) {
 		}
-		for (int j = bottom + 1; j < height; j++)
+		for (int j = bottom + 1; j < game.getHeight(); j++)
 		    if (!casess[j][x].getState().equals(State.BOAT))
 			casess[j][x].setState(State.UNSELECTABLE);
 	    }

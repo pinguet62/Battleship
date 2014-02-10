@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
+import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.AircraftCarrier;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.boat.Cruiser;
@@ -27,7 +28,10 @@ import fr.pinguet62.battleship.model.boat.TorpedoBoat;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 
 /** View where user chose {@link Boat} types and the number. */
-public final class ParametersView {
+public final class ParametersView extends JFrame {
+
+    /** Serial version UID. */
+    private static final long serialVersionUID = -7022220519762450381L;
 
     /** The available {@link Boat} types. */
     private final Collection<Class<? extends Boat>> boatClasses = new LinkedHashSet<>(
@@ -39,13 +43,26 @@ public final class ParametersView {
 
     /** Constructor. */
     public ParametersView() {
-	final JFrame frame = new JFrame("Battleship");
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	super("Battleship");
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	// Layout
-	Container mainContainer = frame.getContentPane();
+	Container mainContainer = getContentPane();
 	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
 
+	// - Port
+	JPanel portPanel = new JPanel();
+	portPanel.setBorder(BorderFactory.createTitledBorder("Server"));
+	portPanel.setLayout(new GridLayout(1, 2));
+	mainContainer.add(portPanel);
+	// -- Title
+	JLabel portTitle = new JLabel("Port");
+	portPanel.add(portTitle);
+	// -- Value
+	// 49152
+	final JSpinner portValue = new JSpinner(new SpinnerNumberModel(49152,
+		1, 65535, 1));
+	portPanel.add(portValue);
 	// - Size
 	JPanel sizePanel = new JPanel();
 	sizePanel.setBorder(BorderFactory.createTitledBorder("Size"));
@@ -108,9 +125,12 @@ public final class ParametersView {
 			boats.add(boat);
 		    }
 
-		new FleetPositioningView((Integer) valueWidthSize.getValue(),
-			(Integer) valueHeightSize.getValue(), boats);
-		frame.dispose();
+		// Next view
+		Game game = new Game((Integer) valueWidthSize.getValue(),
+			(Integer) valueHeightSize.getValue());
+		game.getThreadSocket().setPort((Integer) portValue.getValue());
+		new FleetPositioningView(game, boats);
+		dispose();
 	    }
 	});
 	buttonsPanel.add(okButton);
@@ -119,13 +139,13 @@ public final class ParametersView {
 	quitButton.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(final ActionEvent e) {
-		frame.dispose();
+		dispose();
 	    }
 	});
 	buttonsPanel.add(quitButton);
 
-	frame.pack();
-	frame.setVisible(true);
+	pack();
+	setVisible(true);
     }
 
 }
