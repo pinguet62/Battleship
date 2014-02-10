@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -30,9 +30,9 @@ import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 public final class ParametersView {
 
     /** The available {@link Boat} types. */
-    private final Collection<Class<? extends Boat>> boatClasses = new HashSet<>(
+    private final Collection<Class<? extends Boat>> boatClasses = new LinkedHashSet<>(
 	    Arrays.asList(AircraftCarrier.class, Cruiser.class,
-		    Destroyer.class, TorpedoBoat.class, Submarine.class));
+		    Destroyer.class, Submarine.class, TorpedoBoat.class));
 
     /** The {@link BoatClassSpinner}s. */
     private final Collection<BoatClassSpinner> boatClassSpinners = new ArrayList<>();
@@ -73,8 +73,12 @@ public final class ParametersView {
 	fleetPanel.setLayout(new GridLayout(boatClasses.size(), 2));
 	mainContainer.add(fleetPanel);
 	for (Class<? extends Boat> boatClass : boatClasses) {
-	    JLabel nameBoatFleet = new JLabel(boatClass.getSimpleName());
+	    // Label
+	    Boat boat = Boat.getInstance(boatClass);
+	    JLabel nameBoatFleet = new JLabel(String.format("%s (x%d)",
+		    boat.getName(), boat.getSize()));
 	    fleetPanel.add(nameBoatFleet);
+	    // Spinner
 	    BoatClassSpinner boatClassSpinner = new BoatClassSpinner(boatClass);
 	    boatClassSpinners.add(boatClassSpinner);
 	    fleetPanel.add(boatClassSpinner);

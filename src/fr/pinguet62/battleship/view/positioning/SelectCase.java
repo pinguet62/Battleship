@@ -50,7 +50,7 @@ public final class SelectCase extends JButton {
     private final Coordinates coordinates;
 
     /** The {@link State}. */
-    private State state = State.SELECTABLE;
+    private State state;
 
     /**
      * Constructor.
@@ -61,6 +61,7 @@ public final class SelectCase extends JButton {
     public SelectCase(final Coordinates coordinates) {
 	this.coordinates = coordinates;
 	setPreferredSize(new Dimension(30, 30));
+	setState(State.SELECTABLE);
     }
 
     /**
