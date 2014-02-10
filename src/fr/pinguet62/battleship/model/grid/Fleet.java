@@ -57,4 +57,29 @@ public final class Fleet {
 	return new Score(actual, total);
     }
 
+    public void insertBoat(final Boat boat, final Coordinates first,
+	    final Coordinates last) {
+	// Vertical
+	if (first.getX() == last.getX()) {
+	    final int x = first.getX();
+	    for (int y = first.getY(), i = 0; y <= last.getY(); y++, i++) {
+		Box box = new Box(new Coordinates(x, y), boat);
+		boxss[y][x] = box;
+		boat.setBox(i, box);
+	    }
+	}
+	// Horizontal
+	else if (first.getY() == last.getY()) {
+	    final int y = first.getY();
+	    for (int x = first.getX(), i = 0; x <= last.getX(); x++, i++) {
+		Box box = new Box(new Coordinates(x, y), boat);
+		boxss[y][x] = box;
+		boat.setBox(i, box);
+	    }
+	}
+	// Error
+	else
+	    throw new IllegalArgumentException("Invalid coordinates.");
+    }
+
 }

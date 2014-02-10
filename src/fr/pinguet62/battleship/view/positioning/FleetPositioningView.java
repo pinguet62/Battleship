@@ -181,18 +181,30 @@ public final class FleetPositioningView extends JFrame implements
 	// Count ok
 	List<SelectCase> choosedCases = getSelectedCases(State.CHOOSED);
 	if (choosedCases.size() == selectedBoat.getSize()) {
-	    // TODO insert boat
+	    // Place boat in fleet
+	    game.getMyFleet().insertBoat(selectedBoat,
+		    choosedCases.get(0).getCoordinates(),
+		    choosedCases.get(choosedCases.size() - 1).getCoordinates());
+	    selectedBoat = null;
+
+	    // Refresh
 	    for (SelectCase choosedCase : choosedCases)
 		choosedCase.setState(State.BOAT);
 	    for (SelectCase unselectableCase : getSelectedCases(State.UNSELECTABLE))
 		unselectableCase.setState(State.SELECTABLE);
-	    selectedBoat = null;
 
-	    selectedBoatView.setPlaced(true);
 	    // Refresh buttons
+	    selectedBoatView.setPlaced(true);
+	    boolean allPlaced = true;
 	    for (BoatView boatView : boatViews)
-		if (!boatView.isPlaced())
+		if (!boatView.isPlaced()) {
 		    boatView.setEnabled(true);
+		    allPlaced = false;
+		}
+	    if (allPlaced) {
+		// Next view
+		// TODO
+	    }
 	}
     }
 

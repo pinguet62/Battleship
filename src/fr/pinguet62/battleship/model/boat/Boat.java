@@ -122,4 +122,8 @@ public abstract class Boat {
 	return true;
     }
 
+    public void setBox(final int i, final Box box) {
+	boxs[i] = box;
+    }
+
 }
