@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import fr.pinguet62.battleship.Consumer;
+
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.socket.dto.AttackDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
