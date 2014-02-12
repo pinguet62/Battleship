@@ -1,7 +1,12 @@
 package fr.pinguet62.battleship.model.grid;
 
+import java.io.Serializable;
+
 /** Coordinates in grid. */
-public final class Coordinates {
+public final class Coordinates implements Serializable {
+
+    /** Serial version UID. */
+    private static final long serialVersionUID = -799359244428776811L;
 
     /** The horizontal index. */
     private int x;

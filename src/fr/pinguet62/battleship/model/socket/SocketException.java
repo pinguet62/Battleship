@@ -1,4 +1,4 @@
-package fr.pinguet62.battleship.socket;
+package fr.pinguet62.battleship.model.socket;
 
 public final class SocketException extends RuntimeException {
 

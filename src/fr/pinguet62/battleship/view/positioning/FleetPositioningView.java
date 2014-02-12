@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
+import fr.pinguet62.battleship.model.socket.dto.ParametersDto.BoatEntry;
 import fr.pinguet62.battleship.view.positioning.SelectCase.State;
 
 /** View used to place {@link Boat}s in grid. */
@@ -110,7 +111,7 @@ public final class FleetPositioningView extends JFrame implements
      * @param boats
      *            The {@link Boat}s to place.
      */
-    public FleetPositioningView(final Game game, final Collection<Boat> boats) {
+    public FleetPositioningView(final Game game) {
 	super("Fleet Positioning");
 
 	this.game = game;
@@ -124,22 +125,25 @@ public final class FleetPositioningView extends JFrame implements
 	boatsPanel = new JPanel();
 	boatsPanel.setLayout(new BoxLayout(boatsPanel, BoxLayout.Y_AXIS));
 	mainContainer.add(boatsPanel);
-	for (Boat boat : boats) {
-	    final BoatView boatView = new BoatView(boat);
-	    boatView.addActionListener(new ActionListener() {
-		@Override
-		public void actionPerformed(final ActionEvent e) {
-		    // Save selection
-		    selectedBoat = boatView.getBoat();
-		    selectedBoatView = boatView;
-		    // Disable buttons
-		    for (BoatView boatView : boatViews)
-			boatView.setEnabled(false);
-		}
-	    });
-	    boatViews.add(boatView);
-	    boatsPanel.add(boatView);
-	}
+	for (BoatEntry boatEntry : game.getBoatEntries())
+	    for (int i = 0; i < boatEntry.getNumber(); i++) {
+		Class<? extends Boat> boatType = boatEntry.getBoatClass();
+		Boat boat = Boat.getInstance(boatType);
+		final BoatView boatView = new BoatView(boat);
+		boatView.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(final ActionEvent e) {
+			// Save selection
+			selectedBoat = boatView.getBoat();
+			selectedBoatView = boatView;
+			// Disable buttons
+			for (BoatView boatView : boatViews)
+			    boatView.setEnabled(false);
+		    }
+		});
+		boatViews.add(boatView);
+		boatsPanel.add(boatView);
+	    }
 	// - Grid
 	gridFleetPanel = new JPanel();
 	gridFleetPanel.setLayout(new GridLayout(game.getHeight(), game

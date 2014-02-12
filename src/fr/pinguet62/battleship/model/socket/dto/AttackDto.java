@@ -1,4 +1,4 @@
-package fr.pinguet62.battleship.socket.game;
+package fr.pinguet62.battleship.model.socket.dto;
 
 import java.io.Serializable;
 
@@ -8,7 +8,7 @@ import fr.pinguet62.battleship.model.grid.Coordinates;
  * Store informations about an attack.<br />
  * Sent to opponent player.
  */
-public class Attack implements Serializable {
+public class AttackDto implements Serializable {
 
     /** Serial version UID. */
     private static final long serialVersionUID = 4311698328134751924L;
@@ -22,7 +22,7 @@ public class Attack implements Serializable {
      * @param coordinates
      *            The {@link Coordinates} of the attack.
      */
-    public Attack(final Coordinates coordinates) {
+    public AttackDto(final Coordinates coordinates) {
 	this.coordinates = coordinates;
     }
 

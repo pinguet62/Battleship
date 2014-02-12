@@ -1,7 +1,10 @@
 package fr.pinguet62.battleship.model;
 
+import java.util.Collection;
+
 import fr.pinguet62.battleship.model.grid.Fleet;
-import fr.pinguet62.battleship.model.socket.ThreadSocket;
+import fr.pinguet62.battleship.model.socket.SocketManager;
+import fr.pinguet62.battleship.model.socket.dto.ParametersDto.BoatEntry;
 
 /** General model of this game. */
 public final class Game {
@@ -15,8 +18,11 @@ public final class Game {
     /** The opponent user's {@link Fleet}. */
     private final Fleet opponentFleet;
 
-    /** The {@link ThreadSocket}. */
-    private final ThreadSocket threadSocket = new ThreadSocket();
+    /** The {@link BoatEntry}s. */
+    private Collection<BoatEntry> boatEntries;
+
+    /** The {@link SocketManager}. */
+    private final SocketManager socketManager = new SocketManager(this);
 
     /** The width. */
     private final int width;
@@ -35,6 +41,15 @@ public final class Game {
 
 	myFleet = new Fleet(this);
 	opponentFleet = new Fleet(this);
+    }
+
+    /**
+     * Gets the {@link BoatEntry}s.
+     * 
+     * @return The {@link BoatEntry}s.
+     */
+    public Collection<BoatEntry> getBoatEntries() {
+	return boatEntries;
     }
 
     /**
@@ -65,12 +80,12 @@ public final class Game {
     }
 
     /**
-     * Gets the {@link ThreadSocket}.
+     * Gets the {@link SocketManager}.
      * 
-     * @return The {@link ThreadSocket}.
+     * @return The {@link SocketManager}.
      */
-    public ThreadSocket getThreadSocket() {
-	return threadSocket;
+    public SocketManager getSocketManager() {
+	return socketManager;
     }
 
     /**
@@ -80,6 +95,16 @@ public final class Game {
      */
     public int getWidth() {
 	return width;
+    }
+
+    /**
+     * Sets the {@link BoatEntry}s.
+     * 
+     * @param boatEntries
+     *            The {@link BoatEntry}s.
+     */
+    public void setBoatEntries(final Collection<BoatEntry> boatEntries) {
+	this.boatEntries = boatEntries;
     }
 
 }

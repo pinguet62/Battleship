@@ -25,6 +25,7 @@ import fr.pinguet62.battleship.model.boat.Cruiser;
 import fr.pinguet62.battleship.model.boat.Destroyer;
 import fr.pinguet62.battleship.model.boat.Submarine;
 import fr.pinguet62.battleship.model.boat.TorpedoBoat;
+import fr.pinguet62.battleship.model.socket.dto.ParametersDto.BoatEntry;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 
 /** View where user chose {@link Boat} types and the number. */
@@ -116,21 +117,26 @@ public final class ParametersView extends JFrame {
 		if (nbBoats == 0)
 		    return;
 
-		Collection<Boat> boats = new ArrayList<>();
-		for (BoatClassSpinner boatClassSpinner : boatClassSpinners)
-		    for (int i = 0; i < boatClassSpinner.getIntValue(); i++) {
-			Class<? extends Boat> boatClass = boatClassSpinner
-				.getBoatClass();
-			Boat boat = Boat.getInstance(boatClass);
-			boats.add(boat);
+		// Boat entries
+		Collection<BoatEntry> boatEntries = new ArrayList<>();
+		for (BoatClassSpinner boatClassSpinner : boatClassSpinners) {
+		    int number = boatClassSpinner.getIntValue();
+		    if (0 < number) {
+			BoatEntry boatEntry = new BoatEntry(boatClassSpinner
+				.getBoatClass(), boatClassSpinner.getIntValue());
+			boatEntries.add(boatEntry);
 		    }
+		}
 
-		// Next view
+		// Game
 		Game game = new Game((Integer) valueWidthSize.getValue(),
 			(Integer) valueHeightSize.getValue());
-		game.getThreadSocket().setPort((Integer) portValue.getValue());
-		new FleetPositioningView(game, boats);
+		game.getSocketManager().setPort((Integer) portValue.getValue());
+		game.setBoatEntries(boatEntries);
+
+		// Next view
 		dispose();
+		new WaitConnexionView(game);
 	    }
 	});
 	buttonsPanel.add(okButton);
