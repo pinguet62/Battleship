@@ -1,4 +1,4 @@
-package fr.pinguet62.battleship.model.socket.dto;
+package fr.pinguet62.battleship.socket.dto;
 
 import java.io.Serializable;
 

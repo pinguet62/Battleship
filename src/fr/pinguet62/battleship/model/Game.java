@@ -3,11 +3,15 @@ package fr.pinguet62.battleship.model;
 import java.util.Collection;
 
 import fr.pinguet62.battleship.model.grid.Fleet;
-import fr.pinguet62.battleship.model.socket.SocketManager;
-import fr.pinguet62.battleship.model.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.socket.GuestSocketManager;
+import fr.pinguet62.battleship.socket.SocketManager;
+import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
 
 /** General model of this game. */
 public final class Game {
+
+    /** The {@link BoatEntry}s. */
+    private Collection<BoatEntry> boatEntries;
 
     /** The height. */
     private final int height;
@@ -18,11 +22,16 @@ public final class Game {
     /** The opponent user's {@link Fleet}. */
     private final Fleet opponentFleet;
 
-    /** The {@link BoatEntry}s. */
-    private Collection<BoatEntry> boatEntries;
+    /** Player type. */
+    public final PlayerType playerType;
 
     /** The {@link SocketManager}. */
     private final SocketManager socketManager = new SocketManager(this);
+    private final GuestSocketManager guestSocketManager = new GuestSocketManager(
+	    this);
+    public GuestSocketManager getGuestSocketManager() {
+	return guestSocketManager;
+    }
 
     /** The width. */
     private final int width;
@@ -35,7 +44,8 @@ public final class Game {
      * @param height
      *            The height.
      */
-    public Game(final int width, final int height) {
+    public Game(final PlayerType playerType, final int width, final int height) {
+	this.playerType = playerType;
 	this.width = width;
 	this.height = height;
 

@@ -8,7 +8,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import fr.pinguet62.battleship.view.parameters.ParametersView;
+import fr.pinguet62.battleship.view.parameters.GuestConnexionView;
+import fr.pinguet62.battleship.view.parameters.HostParametersView;
 
 /** First view: choice between host and guest. */
 public final class PlayerTypeChoiceView extends JFrame {
@@ -24,22 +25,24 @@ public final class PlayerTypeChoiceView extends JFrame {
 	// Layout
 	Container mainContainer = getContentPane();
 	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.X_AXIS));
-	// Host
+
+	// - Host
 	JButton hostButton = new JButton("Host");
 	hostButton.addActionListener(new ActionListener() {
 	    @Override
-	    public void actionPerformed(final ActionEvent event) {
-		new ParametersView();
+	    public void actionPerformed(final ActionEvent e) {
+		new HostParametersView();
 		dispose();
 	    }
 	});
 	mainContainer.add(hostButton);
-	// Guest
+	// - Guest
 	JButton guestButton = new JButton("Guest");
 	guestButton.addActionListener(new ActionListener() {
 	    @Override
-	    public void actionPerformed(final ActionEvent event) {
-		// TODO
+	    public void actionPerformed(final ActionEvent e) {
+		new GuestConnexionView();
+		dispose();
 	    }
 	});
 	mainContainer.add(guestButton);

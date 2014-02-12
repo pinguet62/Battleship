@@ -1,15 +1,8 @@
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
-import org.omg.Dynamic.Parameter;
-
-import fr.pinguet62.battleship.model.socket.dto.ParametersDto;
-import fr.pinguet62.battleship.model.socket.dto.PositionsDto;
+import fr.pinguet62.battleship.socket.dto.ParametersDto;
 
 public final class TestClient {
 

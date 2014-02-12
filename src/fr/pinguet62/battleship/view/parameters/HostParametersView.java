@@ -4,6 +4,7 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,17 +20,22 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import fr.pinguet62.battleship.model.Game;
+import fr.pinguet62.battleship.model.PlayerType;
 import fr.pinguet62.battleship.model.boat.AircraftCarrier;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.boat.Cruiser;
 import fr.pinguet62.battleship.model.boat.Destroyer;
 import fr.pinguet62.battleship.model.boat.Submarine;
 import fr.pinguet62.battleship.model.boat.TorpedoBoat;
-import fr.pinguet62.battleship.model.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 
-/** View where user chose {@link Boat} types and the number. */
-public final class ParametersView extends JFrame {
+/**
+ * View where host chose port of the {@link Socket}, {@link Boat} types and the
+ * number.
+ */
+public final class HostParametersView extends JFrame {
 
     /** Serial version UID. */
     private static final long serialVersionUID = -7022220519762450381L;
@@ -43,7 +49,7 @@ public final class ParametersView extends JFrame {
     private final Collection<BoatClassSpinner> boatClassSpinners = new ArrayList<>();
 
     /** Constructor. */
-    public ParametersView() {
+    public HostParametersView() {
 	super("Battleship");
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -101,15 +107,16 @@ public final class ParametersView extends JFrame {
 	    boatClassSpinners.add(boatClassSpinner);
 	    fleetPanel.add(boatClassSpinner);
 	}
-	// - Buttons
-	JPanel buttonsPanel = new JPanel();
-	buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
-	mainContainer.add(buttonsPanel);
+	// - Button
+	JPanel buttonPanel = new JPanel();
+	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+	mainContainer.add(buttonPanel);
 	// -- Ok
 	JButton okButton = new JButton("Ok");
 	okButton.addActionListener(new ActionListener() {
+	    /** Click on "Ok" button. */
 	    @Override
-	    public void actionPerformed(final ActionEvent event) {
+	    public void actionPerformed(ActionEvent e) {
 		// Validation
 		int nbBoats = 0;
 		for (BoatClassSpinner boatClassSpinner : boatClassSpinners)
@@ -129,26 +136,30 @@ public final class ParametersView extends JFrame {
 		}
 
 		// Game
-		Game game = new Game((Integer) valueWidthSize.getValue(),
+		final Game game = new Game(PlayerType.HOST,
+			(Integer) valueWidthSize.getValue(),
 			(Integer) valueHeightSize.getValue());
 		game.getSocketManager().setPort((Integer) portValue.getValue());
 		game.setBoatEntries(boatEntries);
 
 		// Next view
 		dispose();
-		new WaitConnexionView(game);
+		final WaitingView waitConnexionView = new WaitingView(
+			"Waiting guest connexion...");
+		game.getSocketManager().waitClientConnection(new Runnable() {
+		    /**
+		     * Hide {@link WaitingView}.<br />
+		     * Show {@link FleetPositioningView}.
+		     */
+		    @Override
+		    public void run() {
+			waitConnexionView.dispose();
+			new FleetPositioningView(game);
+		    }
+		});
 	    }
 	});
-	buttonsPanel.add(okButton);
-	// -- Cancel
-	JButton quitButton = new JButton("Quit");
-	quitButton.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(final ActionEvent e) {
-		dispose();
-	    }
-	});
-	buttonsPanel.add(quitButton);
+	buttonPanel.add(okButton);
 
 	pack();
 	setVisible(true);

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
-import fr.pinguet62.battleship.model.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
 import fr.pinguet62.battleship.view.positioning.SelectCase.State;
 
 /** View used to place {@link Boat}s in grid. */
@@ -170,11 +170,11 @@ public final class FleetPositioningView extends JFrame implements
      *            The {@link ActionEvent}.
      */
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void actionPerformed(final ActionEvent event) {
 	if (selectedBoat == null)
 	    return;
 
-	SelectCase clickCase = (SelectCase) e.getSource();
+	SelectCase clickCase = (SelectCase) event.getSource();
 
 	clickCase
 		.setState(clickCase.getState().equals(State.CHOOSED) ? State.SELECTABLE
