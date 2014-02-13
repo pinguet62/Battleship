@@ -65,7 +65,6 @@ public final class Coordinates implements Serializable {
 	this.y = y;
     }
 
-    /** Gets the {@link String} representation. */
     @Override
     public String toString() {
 	return String.format("x=%d ; y=%d", x, y);

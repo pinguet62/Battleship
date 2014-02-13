@@ -129,8 +129,10 @@ public final class ParametersDto implements Serializable {
 	    sBuilder.append(boatEntry.toString());
 	    if (it.hasNext())
 		sBuilder.append(", ");
+	    else
+		sBuilder.append("]");
 	}
 	return String.format("width=%d, height=%d, boatEntries=%s", width,
-		height);
+		height, sBuilder.toString());
     }
 }

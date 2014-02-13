@@ -62,7 +62,8 @@ public final class Fleet {
     }
 
     /**
-     * Insert {@link Boat}.
+     * Insert {@link Boat}.<br />
+     * Update {@link Fleet} {@link Box}ss and {@link Boat} {@link Box}s.
      * 
      * @param boat
      *            The {@link Boat}.
@@ -76,7 +77,7 @@ public final class Fleet {
      */
     public void insertBoat(final Boat boat, final Coordinates first,
 	    final Coordinates last) {
-	if (first.getX() != last.getX() && first.getY() == last.getY())
+	if (first.getX() != last.getX() && first.getY() != last.getY())
 	    throw new IllegalArgumentException("Invalid coordinates.");
 	// Vertical
 	else if (first.getX() == last.getX()) {
@@ -84,7 +85,7 @@ public final class Fleet {
 	    for (int y = first.getY(), i = 0; y <= last.getY(); y++, i++) {
 		Box box = new Box(new Coordinates(x, y), boat);
 		boxss[y][x] = box;
-		boat.setBox(i, box);
+		boat.getBoxs()[i] = box;
 	    }
 	}
 	// Horizontal
@@ -93,7 +94,7 @@ public final class Fleet {
 	    for (int x = first.getX(), i = 0; x <= last.getX(); x++, i++) {
 		Box box = new Box(new Coordinates(x, y), boat);
 		boxss[y][x] = box;
-		boat.setBox(i, box);
+		boat.getBoxs()[i] = box;
 	    }
 	}
 	boats.add(boat);

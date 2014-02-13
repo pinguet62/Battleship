@@ -77,17 +77,6 @@ public abstract class Boat {
     }
 
     /**
-     * Gets the {@link Box} at an index.
-     * 
-     * @param i
-     *            The index.
-     * @return The {@link Box}.
-     */
-    public Box getBox(final int i) {
-	return boxs[i];
-    }
-
-    /**
      * Gets the {@link Box}s.
      * 
      * @return The {@link Box}s.
@@ -120,10 +109,6 @@ public abstract class Boat {
 	    if (!box.isAttacked())
 		return false;
 	return true;
-    }
-
-    public void setBox(final int i, final Box box) {
-	boxs[i] = box;
     }
 
 }

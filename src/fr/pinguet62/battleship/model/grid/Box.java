@@ -12,7 +12,7 @@ public final class Box {
     private final Boat boat;
 
     /** The {@link Coordinates}. */
-    private Coordinates coordinates;
+    private final Coordinates coordinates;
 
     /**
      * Constructor.
@@ -73,16 +73,6 @@ public final class Box {
      */
     public boolean isAttacked() {
 	return attacked;
-    }
-
-    /**
-     * Sets the {@link Coordinates}.
-     * 
-     * @param coordinates
-     *            The {@link Coordinates}.
-     */
-    public void setCoordinates(final Coordinates coordinates) {
-	this.coordinates = coordinates;
     }
 
 }

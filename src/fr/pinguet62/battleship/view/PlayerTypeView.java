@@ -8,17 +8,17 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import fr.pinguet62.battleship.view.parameters.GuestConnexionView;
+import fr.pinguet62.battleship.view.parameters.GuestParametersView;
 import fr.pinguet62.battleship.view.parameters.HostParametersView;
 
 /** First view: choice between host and guest. */
-public final class PlayerTypeChoiceView extends JFrame {
+public final class PlayerTypeView extends JFrame {
 
     /** Serial version UID. */
     private static final long serialVersionUID = 8779709289758249345L;
 
     /** Constructor. */
-    public PlayerTypeChoiceView() {
+    public PlayerTypeView() {
 	super("Player type");
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -31,6 +31,7 @@ public final class PlayerTypeChoiceView extends JFrame {
 	hostButton.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(final ActionEvent e) {
+		System.out.println("HOST");
 		new HostParametersView();
 		dispose();
 	    }
@@ -41,7 +42,8 @@ public final class PlayerTypeChoiceView extends JFrame {
 	guestButton.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(final ActionEvent e) {
-		new GuestConnexionView();
+		System.out.println("GUEST");
+		new GuestParametersView();
 		dispose();
 	    }
 	});

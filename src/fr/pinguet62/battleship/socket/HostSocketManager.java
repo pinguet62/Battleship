@@ -15,7 +15,7 @@ import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.PositionsDto;
 
 /** Class who interacts with guest user. */
-public final class SocketManager {
+public final class HostSocketManager {
 
     /** The {@link Game}. */
     private final Game game;
@@ -32,7 +32,7 @@ public final class SocketManager {
      * @param game
      *            The {@link Game}.
      */
-    public SocketManager(final Game game) {
+    public HostSocketManager(final Game game) {
 	this.game = game;
     }
 
@@ -56,21 +56,16 @@ public final class SocketManager {
     }
 
     /**
-     * Initialize the {@link Socket} and the {@link Thread} waiting guest:
      * <ol>
-     * <li>Create the {@link Thread};</li>
-     * <li>Run the {@link Thread};</li>
-     * <li>Create the server {@link Socket};</li>
-     * <li>Wait client connection;</li>
-     * <li>Send {@link ParametersDto} to client;</li>
-     * <li>Execute the method.</li>
-     * </ol>
+     * <li>Create the {@link MyThread} and run this.</li>
+     * <li>After guest connection, send {@link ParametersDto} to guest.</li>
+     * <li>After sending, execute the {@link Runnable} on parameter.</li>
+     * <ol>
      * 
-     * @param method
-     *            The method to execute after connection and sending of
-     *            {@link ParametersDto}.
+     * @param onSentParameters
+     *            The {@link Runnable} to execute at the end.
      */
-    public void waitClientConnection(final Runnable method) {
+    public void waitClientConnection(final Runnable onSentParameters) {
 	// Thread
 	myThread = new MyThread(port);
 	myThread.setOnGuestConnectedListener(new Runnable() {
@@ -80,7 +75,7 @@ public final class SocketManager {
 		ParametersDto parameters = new ParametersDto(game.getWidth(),
 			game.getHeight(), game.getBoatEntries());
 		myThread.send(parameters);
-		method.run();
+		onSentParameters.run();
 	    }
 	});
 	myThread.start();
@@ -91,13 +86,13 @@ public final class SocketManager {
 /** {@link Thread} who listen the client {@link Socket}. */
 class MyThread extends Thread {
 
-    /** Method to execute after {@link AttackDto} received. */
+    /** The {@link Consumer} to execute after {@link AttackDto} reception. */
     private Consumer<AttackDto> onAttackReceivedListener;
 
-    /** Method to execute after guest connection. */
+    /** The {@link Runnable} to execute after guest connection. */
     private Runnable onGuestConnectedListener;
 
-    /** Method to execute after {@link PositionsDto} received. */
+    /** The {@link Consumer} to execute after {@link PositionsDto} reception. */
     private Consumer<PositionsDto> onPositionsReceivedListener;
 
     /** The client {@link Socket}. */
@@ -107,7 +102,8 @@ class MyThread extends Thread {
     private final ServerSocket socketServeur;
 
     /**
-     * The server {@link Socket}.
+     * The server {@link Socket}.<br />
+     * Initialize the server {@link Socket}.
      * 
      * @param port
      *            The port of {@link Socket}.
@@ -125,23 +121,34 @@ class MyThread extends Thread {
     /** Listening guest. */
     @Override
     public void run() {
-	// Guest connexion
+	// Guest connection
 	try {
+	    System.out.println("Waiting guest connection...");
 	    socketClient = socketServeur.accept();
+	    System.out.println("Guest connected.");
+	    if (onGuestConnectedListener != null)
+		onGuestConnectedListener.run();
 	} catch (IOException exception) {
 	    throw new SocketException("Error creating client socket.",
 		    exception);
 	}
-	if (onGuestConnectedListener != null)
-	    onGuestConnectedListener.run();
+
+	InputStream inputStream = null;
+	try {
+	    inputStream = socketClient.getInputStream();
+	} catch (IOException exception) {
+	    throw new SocketException("Error during getting input stream.",
+		    exception);
+	}
 
 	// Positioning
 	try {
-	    InputStream inputStream = socketClient.getInputStream();
+	    System.out.println("Waiting guest positions...");
 	    ObjectInputStream objectInputStream = new ObjectInputStream(
 		    inputStream);
 	    PositionsDto positionsDto = (PositionsDto) objectInputStream
 		    .readObject();
+	    System.out.println("Boat positions received: " + positionsDto);
 	    if (onPositionsReceivedListener != null)
 		onPositionsReceivedListener.accept(positionsDto);
 	} catch (IOException | ClassNotFoundException exception) {
@@ -149,20 +156,20 @@ class MyThread extends Thread {
 		    "Error receiving boat positions from guest.", exception);
 	}
 
-	while (true) {
-	    try {
-		InputStream inputStream = socketClient.getInputStream();
-		ObjectInputStream objectInputStream = new ObjectInputStream(
-			inputStream);
-		AttackDto attackDto = (AttackDto) objectInputStream
-			.readObject();
-		if (onAttackReceivedListener != null)
-		    onAttackReceivedListener.accept(attackDto);
-	    } catch (IOException | ClassNotFoundException exception) {
-		throw new SocketException("Error receiving attack from guest.",
-			exception);
-	    }
-	}
+	// while (true) {
+	// // Attack
+	// try {
+	// ObjectInputStream objectInputStream = new ObjectInputStream(
+	// inputStream);
+	// AttackDto attackDto = (AttackDto) objectInputStream
+	// .readObject();
+	// if (onAttackReceivedListener != null)
+	// onAttackReceivedListener.accept(attackDto);
+	// } catch (IOException | ClassNotFoundException exception) {
+	// throw new SocketException("Error receiving attack from guest.",
+	// exception);
+	// }
+	// }
     }
 
     /**
@@ -173,28 +180,49 @@ class MyThread extends Thread {
      */
     public void send(final Object object) {
 	try {
+	    System.out.println(String.format("Sending [%s] to guest... (%s)",
+		    object.getClass().getSimpleName(), object));
 	    OutputStream outputStream = socketClient.getOutputStream();
 	    ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 		    outputStream);
 	    objectOutputStream.writeObject(object);
 	    objectOutputStream.flush();
-	    objectOutputStream.close();
 	} catch (IOException exception) {
 	    throw new SocketException("Error serializing message.", exception);
 	}
     }
 
-    public void setOnAttackReceivedListener(final Consumer<AttackDto> consumer) {
-	onAttackReceivedListener = consumer;
+    /**
+     * Sets the {@link Consumer} to execute after {@link AttackDto} reception.
+     * 
+     * @param onAttackReceived
+     *            The {@link Consumer} to execute.
+     */
+    public void setOnAttackReceivedListener(
+	    final Consumer<AttackDto> onAttackReceived) {
+	onAttackReceivedListener = onAttackReceived;
     }
 
-    public void setOnGuestConnectedListener(final Runnable method) {
-	onGuestConnectedListener = method;
+    /**
+     * Sets the {@link Runnable} to execute after guest connection.
+     * 
+     * @param onGuestConnected
+     *            The {@link Runnable} to execute.
+     */
+    public void setOnGuestConnectedListener(final Runnable onGuestConnected) {
+	onGuestConnectedListener = onGuestConnected;
     }
 
+    /**
+     * Sets the {@link Consumer} to execute after {@link PositionsDto}
+     * reception.
+     * 
+     * @param onPositionsReceived
+     *            The {@link Consumer} to execute.
+     */
     public void setOnPositionsReceivedListener(
-	    final Consumer<PositionsDto> consumer) {
-	onPositionsReceivedListener = consumer;
+	    final Consumer<PositionsDto> onPositionsReceived) {
+	onPositionsReceivedListener = onPositionsReceived;
     }
 
 }

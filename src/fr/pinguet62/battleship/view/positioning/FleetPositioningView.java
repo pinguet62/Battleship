@@ -23,6 +23,7 @@ import fr.pinguet62.battleship.view.positioning.SelectCase.State;
 public final class FleetPositioningView extends JFrame implements
 	ActionListener {
 
+    /** The four directions. */
     private enum Direction {
 
 	/** Bottom. */
@@ -131,6 +132,10 @@ public final class FleetPositioningView extends JFrame implements
 		Boat boat = Boat.getInstance(boatType);
 		final BoatView boatView = new BoatView(boat);
 		boatView.addActionListener(new ActionListener() {
+		    /**
+		     * Save selected {@link BoatView}.<br />
+		     * Refresh {@link BoatView}s.
+		     */
 		    @Override
 		    public void actionPerformed(final ActionEvent e) {
 			// Save selection
@@ -166,7 +171,7 @@ public final class FleetPositioningView extends JFrame implements
     /**
      * Click on a {@link SelectCase}.
      * 
-     * @param e
+     * @param event
      *            The {@link ActionEvent}.
      */
     @Override

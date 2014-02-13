@@ -14,15 +14,20 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import fr.pinguet62.battleship.view.WaitingView;
+import fr.pinguet62.battleship.Consumer;
+import fr.pinguet62.battleship.model.Game;
+import fr.pinguet62.battleship.model.PlayerType;
+import fr.pinguet62.battleship.socket.dto.ParametersDto;
+import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 
-public final class GuestConnexionView extends JFrame {
+/** The view parameters for {@link PlayerType#GUEST}. */
+public final class GuestParametersView extends JFrame {
 
     /** Serial version UID. */
     private static final long serialVersionUID = 4508008391795747860L;
 
     /** Constructor. */
-    public GuestConnexionView() {
+    public GuestParametersView() {
 	super("Guest");
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -54,10 +59,23 @@ public final class GuestConnexionView extends JFrame {
 	    /** Click on "Ok" button. */
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		dispose();
-		final WaitingView waitConnexionView = new WaitingView(
-			"Connexion to host...");
-		// TODO connection avec Runnable en paramètre
+		final Game game = new Game(PlayerType.GUEST);
+		game.getGuestSocketManager()
+			.setPort((int) portValue.getValue());
+		game.getGuestSocketManager().connectToHost(
+		/** {@link ParametersDto} received. */
+		new Consumer<ParametersDto>() {
+		    /**
+		     * Initialize {@link Game}.<br />
+		     * Show {@link FleetPositioningView}.
+		     */
+		    @Override
+		    public void accept(final ParametersDto parametersDto) {
+			game.init(parametersDto);
+			dispose();
+			new FleetPositioningView(game);
+		    }
+		});
 	    }
 	});
 	buttonPanel.add(okButton);

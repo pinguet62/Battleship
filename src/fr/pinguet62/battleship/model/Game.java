@@ -4,7 +4,8 @@ import java.util.Collection;
 
 import fr.pinguet62.battleship.model.grid.Fleet;
 import fr.pinguet62.battleship.socket.GuestSocketManager;
-import fr.pinguet62.battleship.socket.SocketManager;
+import fr.pinguet62.battleship.socket.HostSocketManager;
+import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
 
 /** General model of this game. */
@@ -14,19 +15,19 @@ public final class Game {
     private Collection<BoatEntry> boatEntries;
 
     /** The height. */
-    private final int height;
+    private int height = -1;
 
     /** The current user's {@link Fleet}. */
-    private final Fleet myFleet;
+    private Fleet myFleet;
 
     /** The opponent user's {@link Fleet}. */
-    private final Fleet opponentFleet;
+    private Fleet opponentFleet;
 
     /** Player type. */
     public final PlayerType playerType;
 
-    /** The {@link SocketManager}. */
-    private final SocketManager socketManager = new SocketManager(this);
+    /** The {@link HostSocketManager}. */
+    private final HostSocketManager socketManager = new HostSocketManager(this);
     private final GuestSocketManager guestSocketManager = new GuestSocketManager(
 	    this);
     public GuestSocketManager getGuestSocketManager() {
@@ -34,23 +35,16 @@ public final class Game {
     }
 
     /** The width. */
-    private final int width;
+    private int width = -1;
 
     /**
      * Constructor.
      * 
-     * @param width
-     *            The width.
-     * @param height
-     *            The height.
+     * @param playerType
+     *            The {@link PlayerType}.
      */
-    public Game(final PlayerType playerType, final int width, final int height) {
+    public Game(final PlayerType playerType) {
 	this.playerType = playerType;
-	this.width = width;
-	this.height = height;
-
-	myFleet = new Fleet(this);
-	opponentFleet = new Fleet(this);
     }
 
     /**
@@ -90,11 +84,11 @@ public final class Game {
     }
 
     /**
-     * Gets the {@link SocketManager}.
+     * Gets the {@link HostSocketManager}.
      * 
-     * @return The {@link SocketManager}.
+     * @return The {@link HostSocketManager}.
      */
-    public SocketManager getSocketManager() {
+    public HostSocketManager getSocketManager() {
 	return socketManager;
     }
 
@@ -107,14 +101,19 @@ public final class Game {
 	return width;
     }
 
-    /**
-     * Sets the {@link BoatEntry}s.
+    /***
+     * Initialize the game with the {@link ParametersDto}.
      * 
-     * @param boatEntries
-     *            The {@link BoatEntry}s.
+     * @param parametersDto
+     *            The {@link ParametersDto}.
      */
-    public void setBoatEntries(final Collection<BoatEntry> boatEntries) {
-	this.boatEntries = boatEntries;
+    public void init(final ParametersDto parametersDto) {
+	this.width = parametersDto.getWidth();
+	this.height = parametersDto.getHeight();
+	this.boatEntries = parametersDto.getBoatEntries();
+
+	myFleet = new Fleet(this);
+	opponentFleet = new Fleet(this);
     }
 
 }

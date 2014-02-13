@@ -8,59 +8,109 @@ URL : https://www.websequencediagrams.com/#
 ### General
 
 ```
-note over A,B: Initialisation
+title Exchanges between host and guest
 
-A->A: Saisie paramètres :\nport, taille & bateaux
-B->B: Saisie paramètres :\nport
+note over Host, Guest: Parameters
+Host-->Host: choice:\n[Port, Size, Boats]
+note left of Host: Parameters\n[Port, Width/Height, Boats]
+Guest-->Guest: choice:\n[Port]
+Host->Host: wait()
+Guest->Host: onGuestConnected()
+Host->Guest: send(:ParametersDto)
+note right of Guest: Parameters\n[Port, Width/Height, Boats]
 
-A->A: Attente de connexion
-B->A: Connexion
-A->B: Envoie paramètres
+note over Host, Guest: Positioning
+Host-->Host: choice:\nBoats positioning
+Guest-->Guest: choice:\nBoats positioning
+Host->Host: wait()
+Guest->Guest: wait()
+Host->Guest: send(:PositioningDto)
+note right of Guest: Positioning
+Guest->Host: send(:PositioningDto)
+note left of Host: Positioning
 
-
-note over A,B: Positionnement
-
-A->A: Positionnement bateaux
-B->B: Positionnement bateaux
-
-A->A: Attente positions
-B->A: Envoie positions
-B->B: Attente positions
-A->B: Envoie positions
-
-
-note over A,B: Jeu
-
+note over Host, Guest: Game
 loop Jeu en cours
-    B->B: Attente
-    A->B: Attaque
-    A->A: Attente
-    B->A: Attaque
+    note over Host, Guest: Lap 1
+    Guest->Guest: wait()
+    Host-->Host: choice\n[Coordinates]
+    Host->Host: refresh()
+    Host->Guest: send(:AttackDto)
+    Host->Host: wait()
+    Guest->Guest: refresh()
+    Guest-->Guest: choice\n[Coordinates]
+    Guest->Guest: refresh()
+    Guest->Host: send(:AttackDto)
+    Guest->Guest: wait()
+    Host->Host: refresh()
+    note over Host, Guest: Lap 2
+    Host-->Host: choice\n[Coordinates]
+    Host->Host: refresh()
+    Host->Guest: send(:AttackDto)
 end
 ```
 
 ### Details
 
+#### Host
+
 ```
-User->+PlayerTypeChoiceView: Show()
-User-->PlayerTypeChoiceView: Choix
-PlayerTypeChoiceView->-PlayerTypeChoiceView: Dispose()
+note over User, PlayerTypeView: Choice Host
+User->+PlayerTypeView: show()
+User-->PlayerTypeView: choice
+PlayerTypeView->-PlayerTypeView: dispose()
 
-PlayerTypeChoiceView->+HostParametersView: Show()
-User-->HostParametersView: Choix(Port, Bateaux & Nombre)
-HostParametersView-->HostSocketManager: ConnectGuest()
-HostParametersView->HostParametersView: Wait()
-HostSocketManager-->HostParametersView: GuestConnected()
-HostParametersView->-HostParametersView: Dispose()
+note over User, HostParametersView: Parameters
+PlayerTypeView->+HostParametersView: show()
+User-->HostParametersView: Choice\nPort, Size, Boats
+HostParametersView-->HostSocketManager: init()
+HostParametersView->HostParametersView: wait()
+HostSocketManager->HostSocketManager: guestConnected()
+HostSocketManager-->HostParametersView: continue()
+HostParametersView->-HostParametersView: dispose()
 
-HostParametersView->+FleetPositioningView: Show(game)\n[PlayerType, Width & Height, BoatEntries]
+note over User, FleetPositioningView: Positioning
+HostParametersView->+FleetPositioningView: show(Game)\n[PlayerType, Width & Height, BoatEntries]
 
 loop All not placed
-    User-->FleetPositioningView: Positioning TODO
+    User-->FleetPositioningView: choiceBoat
+    loop Boat placed
+        User-->FleetPositioningView: selectCase()
+        FleetPositioningView->FleetPositioningView: refresh()
+    end
 end
 
-FleetPositioningView->TODO: TODO
-FleetPositioningView->-FleetPositioningView: Dispose()
+FleetPositioningView->-FleetPositioningView: dispose()
+```
 
+#### Guest
 
+```
+note over User, PlayerTypeView: Choice Guest
+User->+PlayerTypeView: show()
+User-->PlayerTypeView: choice
+PlayerTypeView->-PlayerTypeView: dispose()
+
+note over User, GuestParametersView: Parameters
+PlayerTypeView->+GuestParametersView: show()
+User-->GuestParametersView: Choice\nPort
+GuestParametersView-->GuestSocketManager: init()
+GuestParametersView->GuestParametersView: wait()
+GuestSocketManager->GuestSocketManager: hostConnecting()
+GuestSocketManager->GuestSocketManager: initGame()
+GuestSocketManager-->GuestParametersView: continue()
+GuestParametersView->-GuestParametersView: dispose()
+
+note over User, FleetPositioningView: Positioning
+GuestParametersView->+FleetPositioningView: show(Game)\n[PlayerType, Width & Height, BoatEntries]
+
+loop All not placed
+    User-->FleetPositioningView: choiceBoat
+    loop Boat placed
+        User-->FleetPositioningView: selectCase()
+        FleetPositioningView->FleetPositioningView: refresh()
+    end
+end
+
+FleetPositioningView->-FleetPositioningView: dispose()
 ```

@@ -16,6 +16,8 @@ public final class TestClient {
 		.readObject();
 	System.out.println("parametersDto = " + parametersDto.toString());
 	
+	Thread.sleep(50000);
+	
 	clientSocket.close();
     }
     

@@ -5,12 +5,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import fr.pinguet62.battleship.Consumer;
-
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.socket.dto.AttackDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
@@ -44,9 +41,10 @@ public final class GuestSocketManager {
      * @param method
      *            The method to execute after connection.
      */
-    public void connectToHost(final Runnable method) {
-	// Thread
+    public void connectToHost(final Consumer<ParametersDto> consumer) {
 	guestThread = new GuestThread(port);
+	guestThread.setOnConnectedListener(consumer);
+	guestThread.start();
     }
 
     /**
@@ -64,17 +62,14 @@ public final class GuestSocketManager {
 /** {@link Thread} who listen the client {@link Socket}. */
 class GuestThread extends Thread {
 
-    /** Method to execute after {@link AttackDto} received. */
+    /** The {@link Consumer} to execute after {@link AttackDto} reception. */
     private Consumer<AttackDto> onAttackReceivedListener;
 
-    /** Method to execute after guest connection. */
-    private Runnable onGuestConnectedListener;
+    /** The {@link Runnable} to execute after guest connection. */
+    private Consumer<ParametersDto> onConnectedListener;
 
-    /** Method to execute after {@link PositionsDto} received. */
+    /** The {@link Consumer} to execute after {@link PositionsDto} reception. */
     private Consumer<PositionsDto> onPositionsReceivedListener;
-
-    /** The client {@link Socket}. */
-    private Socket socketClient;
 
     /** The server {@link Socket}. */
     private final Socket socket;
@@ -87,7 +82,8 @@ class GuestThread extends Thread {
      */
     public GuestThread(final int port) {
 	try {
-	    socket = new Socket("localhost", 49152);
+	    socket = new Socket("localhost", port);
+	    System.out.println("Connected to host.");
 	} catch (IOException exception) {
 	    throw new SocketException("Error during serveur socket creation.",
 		    exception);
@@ -97,6 +93,58 @@ class GuestThread extends Thread {
     /** Listening guest. */
     @Override
     public void run() {
+	InputStream inputStream = null;
+	try {
+	    inputStream = socket.getInputStream();
+	} catch (IOException exception) {
+	    throw new SocketException("Error during getting input stream.",
+		    exception);
+	}
+
+	// Parameters
+	try {
+	    System.out.println("Waiting host parameters...");
+	    ObjectInputStream objectInputStream = new ObjectInputStream(
+		    inputStream);
+	    ParametersDto parametersDto = (ParametersDto) objectInputStream
+		    .readObject();
+	    System.out.println("Parameters received: " + parametersDto);
+	    if (onConnectedListener != null)
+		onConnectedListener.accept(parametersDto);
+	} catch (IOException | ClassNotFoundException exception) {
+	    throw new SocketException(
+		    "Error receiving boat positions from guest.", exception);
+	}
+
+	// Positioning
+	try {
+	    System.out.println("Waiting host positions...");
+	    ObjectInputStream objectInputStream = new ObjectInputStream(
+		    inputStream);
+	    PositionsDto positionsDto = (PositionsDto) objectInputStream
+		    .readObject();
+	    System.out.println("Boat positions received: " + positionsDto);
+	    if (onPositionsReceivedListener != null)
+		onPositionsReceivedListener.accept(positionsDto);
+	} catch (IOException | ClassNotFoundException exception) {
+	    throw new SocketException(
+		    "Error receiving boat positions from guest.", exception);
+	}
+
+	// while (true) {
+	// // Attack
+	// try {
+	// ObjectInputStream objectInputStream = new ObjectInputStream(
+	// inputStream);
+	// AttackDto attackDto = (AttackDto) objectInputStream
+	// .readObject();
+	// if (onAttackReceivedListener != null)
+	// onAttackReceivedListener.accept(attackDto);
+	// } catch (IOException | ClassNotFoundException exception) {
+	// throw new SocketException("Error receiving attack from guest.",
+	// exception);
+	// }
+	// }
     }
 
     /**
@@ -107,28 +155,49 @@ class GuestThread extends Thread {
      */
     public void send(final Object object) {
 	try {
-	    OutputStream outputStream = socketClient.getOutputStream();
+	    System.out.println(String.format("Sending [%s] to host... (%s)",
+		    object.getClass().getSimpleName(), object));
+	    OutputStream outputStream = socket.getOutputStream();
 	    ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 		    outputStream);
 	    objectOutputStream.writeObject(object);
 	    objectOutputStream.flush();
-	    objectOutputStream.close();
 	} catch (IOException exception) {
 	    throw new SocketException("Error serializing message.", exception);
 	}
     }
 
-    public void setOnAttackReceivedListener(final Consumer<AttackDto> consumer) {
-	onAttackReceivedListener = consumer;
+    /**
+     * Sets the {@link Consumer} to execute after {@link AttackDto} reception.
+     * 
+     * @param onAttackReceived
+     *            The {@link Consumer} to execute.
+     */
+    public void setOnAttackReceivedListener(
+	    final Consumer<AttackDto> onAttackReceived) {
+	onAttackReceivedListener = onAttackReceived;
     }
 
-    public void setOnGuestConnectedListener(final Runnable method) {
-	onGuestConnectedListener = method;
+    /**
+     * Sets the {@link Runnable} to execute after connection.
+     * 
+     * @param onConnected
+     *            The {@link Runnable} to execute.
+     */
+    public void setOnConnectedListener(final Consumer<ParametersDto> onConnected) {
+	onConnectedListener = onConnected;
     }
 
+    /**
+     * Sets the {@link Consumer} to execute after {@link PositionsDto}
+     * reception.
+     * 
+     * @param onPositionsReceived
+     *            The {@link Consumer} to execute.
+     */
     public void setOnPositionsReceivedListener(
-	    final Consumer<PositionsDto> consumer) {
-	onPositionsReceivedListener = consumer;
+	    final Consumer<PositionsDto> onPositionsReceived) {
+	onPositionsReceivedListener = onPositionsReceived;
     }
 
 }

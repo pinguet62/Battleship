@@ -27,13 +27,14 @@ import fr.pinguet62.battleship.model.boat.Cruiser;
 import fr.pinguet62.battleship.model.boat.Destroyer;
 import fr.pinguet62.battleship.model.boat.Submarine;
 import fr.pinguet62.battleship.model.boat.TorpedoBoat;
+import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
 import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 
 /**
- * View where host chose port of the {@link Socket}, {@link Boat} types and the
- * number.
+ * View where host chose port of the {@link Socket}, the size of grid, and
+ * {@link Boat} types with the number.
  */
 public final class HostParametersView extends JFrame {
 
@@ -136,11 +137,10 @@ public final class HostParametersView extends JFrame {
 		}
 
 		// Game
-		final Game game = new Game(PlayerType.HOST,
-			(Integer) valueWidthSize.getValue(),
-			(Integer) valueHeightSize.getValue());
+		final Game game = new Game(PlayerType.HOST);
+		game.init(new ParametersDto((int) valueWidthSize.getValue(),
+			(int) valueHeightSize.getValue(), boatEntries));
 		game.getSocketManager().setPort((Integer) portValue.getValue());
-		game.setBoatEntries(boatEntries);
 
 		// Next view
 		dispose();
