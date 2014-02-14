@@ -15,19 +15,29 @@ import javax.swing.SwingConstants;
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 
-public final class GameView implements ActionListener {
+/** Duel view. */
+public final class GameView extends JFrame implements ActionListener {
 
-    private final JFrame frame = new JFrame("Battleship");
+    /** Serial version UID. */
+    private static final long serialVersionUID = -2190498449403789762L;
 
+    /** The {@link Game}. */
     private final Game game;
 
-    public GameView(final Game model) {
-	game = model;
+    /**
+     * Constructor.
+     * 
+     * @param game
+     *            The {@link Game}.
+     */
+    public GameView(final Game game) {
+	super("Battleship");
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	this.game = game;
 
 	// Layout
-	Container mainContainer = frame.getContentPane();
+	Container mainContainer = getContentPane();
 	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.X_AXIS));
 
 	// - Fleet
@@ -73,8 +83,8 @@ public final class GameView implements ActionListener {
 		gridOpponenPanel.add(button);
 	    }
 
-	frame.pack();
-	frame.setVisible(true);
+	pack();
+	setVisible(true);
     }
 
     @Override

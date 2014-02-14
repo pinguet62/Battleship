@@ -14,11 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-import fr.pinguet62.battleship.Consumer;
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.PlayerType;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
+import fr.pinguet62.utils.Consumer;
 
 /** The view parameters for {@link PlayerType#GUEST}. */
 public final class GuestParametersView extends JFrame {

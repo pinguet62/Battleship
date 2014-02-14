@@ -8,11 +8,11 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import fr.pinguet62.battleship.Consumer;
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.socket.dto.AttackDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.PositionsDto;
+import fr.pinguet62.utils.Consumer;
 
 /** Class who interacts with guest user. */
 public final class HostSocketManager {
@@ -34,15 +34,6 @@ public final class HostSocketManager {
      */
     public HostSocketManager(final Game game) {
 	this.game = game;
-    }
-
-    /**
-     * Gets the port.
-     * 
-     * @return The port.
-     */
-    public int getPort() {
-	return port;
     }
 
     /**

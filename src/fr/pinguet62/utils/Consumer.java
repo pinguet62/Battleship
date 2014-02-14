@@ -1,4 +1,4 @@
-package fr.pinguet62.battleship;
+package fr.pinguet62.utils;
 
 /**
  * Operation that accepts a single input argument and returns no result.

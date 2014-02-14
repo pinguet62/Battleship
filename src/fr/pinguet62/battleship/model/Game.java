@@ -30,6 +30,7 @@ public final class Game {
     private final HostSocketManager socketManager = new HostSocketManager(this);
     private final GuestSocketManager guestSocketManager = new GuestSocketManager(
 	    this);
+
     public GuestSocketManager getGuestSocketManager() {
 	return guestSocketManager;
     }
@@ -81,6 +82,15 @@ public final class Game {
      */
     public Fleet getOpponentFleet() {
 	return opponentFleet;
+    }
+
+    /**
+     * Gets the {@link PlayerType}.
+     * 
+     * @return The {@link PlayerType}.
+     */
+    public PlayerType getPlayerType() {
+	return playerType;
     }
 
     /**

@@ -7,6 +7,7 @@ import javax.swing.JButton;
 
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
+import fr.pinguet62.utils.Hexavigesimal;
 
 /** A box in grid. */
 public final class BoxView extends JButton {
@@ -59,7 +60,9 @@ public final class BoxView extends JButton {
      *            The {@link Coordinates}.
      */
     public BoxView(final Coordinates coordinates) {
-	super(String.format("(%d;%d)", coordinates.getX(), coordinates.getY()));
+	super(String.format("%s%d",
+		new Hexavigesimal(coordinates.getX()).toString(),
+		coordinates.getY()));
 	this.coordinates = coordinates;
 	setPreferredSize(new Dimension(30, 30));
     }

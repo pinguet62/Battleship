@@ -17,6 +17,7 @@ import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.view.game.GameView;
 import fr.pinguet62.battleship.view.positioning.SelectCase.State;
 
 /** View used to place {@link Boat}s in grid. */
@@ -116,6 +117,16 @@ public final class FleetPositioningView extends JFrame implements
 	super("Fleet Positioning");
 
 	this.game = game;
+	Runnable onPositionsExchanged = new Runnable() {
+	    @Override
+	    public void run() {
+		if (game.getPlayerType().isHost()) {
+
+		} else {
+
+		}
+	    }
+	};
 
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -212,7 +223,8 @@ public final class FleetPositioningView extends JFrame implements
 		}
 	    if (allPlaced) {
 		// Next view
-		// TODO
+		dispose();
+		new GameView(game);
 	    }
 	}
     }
