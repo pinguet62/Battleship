@@ -53,10 +53,10 @@ public final class HostSocketManager {
      * <li>After sending, execute the {@link Runnable} on parameter.</li>
      * <ol>
      * 
-     * @param onSentParameters
+     * @param onParametersSent
      *            The {@link Runnable} to execute at the end.
      */
-    public void waitClientConnection(final Runnable onSentParameters) {
+    public void waitClientConnection(final Runnable onParametersSent) {
 	// Thread
 	myThread = new MyThread(port);
 	myThread.setOnGuestConnectedListener(new Runnable() {
@@ -66,7 +66,7 @@ public final class HostSocketManager {
 		ParametersDto parameters = new ParametersDto(game.getWidth(),
 			game.getHeight(), game.getBoatEntries());
 		myThread.send(parameters);
-		onSentParameters.run();
+		onParametersSent.run();
 	    }
 	});
 	myThread.start();
