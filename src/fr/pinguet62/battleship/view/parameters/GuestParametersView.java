@@ -65,7 +65,8 @@ public final class GuestParametersView extends JFrame {
 
 		// Next view
 		dispose();
-		new WaitingView("Waiting host parameters...");
+		final WaitingView waitParametersView = new WaitingView(
+			"Waiting host parameters...");
 		game.getGuestSocketManager()
 			.setPort((int) portValue.getValue());
 		game.getGuestSocketManager().connectToHost(
@@ -79,7 +80,7 @@ public final class GuestParametersView extends JFrame {
 				game.init(parametersDto);
 
 				// Next view
-				dispose();
+				waitParametersView.dispose();
 				new FleetPositioningView(game);
 			    }
 			});
