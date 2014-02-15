@@ -17,6 +17,7 @@ import javax.swing.SpinnerNumberModel;
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.PlayerType;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
+import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 import fr.pinguet62.utils.Consumer;
 
@@ -58,24 +59,30 @@ public final class GuestParametersView extends JFrame {
 	okButton.addActionListener(new ActionListener() {
 	    /** Click on "Ok" button. */
 	    @Override
-	    public void actionPerformed(ActionEvent e) {
+	    public void actionPerformed(final ActionEvent e) {
+		// Game
 		final Game game = new Game(PlayerType.GUEST);
+
+		// Next view
+		dispose();
+		new WaitingView("Waiting host parameters...");
 		game.getGuestSocketManager()
 			.setPort((int) portValue.getValue());
 		game.getGuestSocketManager().connectToHost(
-		/** {@link ParametersDto} received. */
-		new Consumer<ParametersDto>() {
-		    /**
-		     * Initialize {@link Game}.<br />
-		     * Show {@link FleetPositioningView}.
-		     */
-		    @Override
-		    public void accept(final ParametersDto parametersDto) {
-			game.init(parametersDto);
-			dispose();
-			new FleetPositioningView(game);
-		    }
-		});
+			new Consumer<ParametersDto>() {
+			    /**
+			     * Initialize {@link Game}.<br />
+			     * Show {@link FleetPositioningView}.
+			     */
+			    @Override
+			    public void accept(final ParametersDto parametersDto) {
+				game.init(parametersDto);
+
+				// Next view
+				dispose();
+				new FleetPositioningView(game);
+			    }
+			});
 	    }
 	});
 	buttonPanel.add(okButton);

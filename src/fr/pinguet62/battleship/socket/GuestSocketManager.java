@@ -16,9 +16,6 @@ import fr.pinguet62.utils.Consumer;
 /** Class who interacts with guest user. */
 public final class GuestSocketManager {
 
-    /** The {@link Game}. */
-    private final Game game;
-
     /** The {@link GuestThread}. */
     private GuestThread guestThread;
 
@@ -32,18 +29,17 @@ public final class GuestSocketManager {
      *            The {@link Game}.
      */
     public GuestSocketManager(final Game game) {
-	this.game = game;
     }
 
     /**
      * Connect to host.
      * 
-     * @param method
+     * @param onConnected
      *            The method to execute after connection.
      */
-    public void connectToHost(final Consumer<ParametersDto> consumer) {
+    public void connectToHost(final Consumer<ParametersDto> onConnected) {
 	guestThread = new GuestThread(port);
-	guestThread.setOnConnectedListener(consumer);
+	guestThread.setOnParametersReceivedListener(onConnected);
 	guestThread.start();
     }
 
@@ -62,11 +58,8 @@ public final class GuestSocketManager {
 /** {@link Thread} who listen the client {@link Socket}. */
 class GuestThread extends Thread {
 
-    /** The {@link Consumer} to execute after {@link AttackDto} reception. */
-    private Consumer<AttackDto> onAttackReceivedListener;
-
     /** The {@link Runnable} to execute after guest connection. */
-    private Consumer<ParametersDto> onConnectedListener;
+    private Consumer<ParametersDto> onParametersReceivedListener;
 
     /** The {@link Consumer} to execute after {@link PositionsDto} reception. */
     private Consumer<PositionsDto> onPositionsReceivedListener;
@@ -109,8 +102,8 @@ class GuestThread extends Thread {
 	    ParametersDto parametersDto = (ParametersDto) objectInputStream
 		    .readObject();
 	    System.out.println("Parameters received: " + parametersDto);
-	    if (onConnectedListener != null)
-		onConnectedListener.accept(parametersDto);
+	    if (onParametersReceivedListener != null)
+		onParametersReceivedListener.accept(parametersDto);
 	} catch (IOException | ClassNotFoundException exception) {
 	    throw new SocketException(
 		    "Error receiving boat positions from guest.", exception);
@@ -175,17 +168,18 @@ class GuestThread extends Thread {
      */
     public void setOnAttackReceivedListener(
 	    final Consumer<AttackDto> onAttackReceived) {
-	onAttackReceivedListener = onAttackReceived;
     }
 
     /**
-     * Sets the {@link Runnable} to execute after connection.
+     * Sets the {@link Runnable} to execute after {@link ParametersDto}
+     * reception.
      * 
-     * @param onConnected
+     * @param onParametersReceived
      *            The {@link Runnable} to execute.
      */
-    public void setOnConnectedListener(final Consumer<ParametersDto> onConnected) {
-	onConnectedListener = onConnected;
+    public void setOnParametersReceivedListener(
+	    final Consumer<ParametersDto> onParametersReceived) {
+	onParametersReceivedListener = onParametersReceived;
     }
 
     /**

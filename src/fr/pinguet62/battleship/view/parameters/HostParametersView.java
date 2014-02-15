@@ -117,7 +117,7 @@ public final class HostParametersView extends JFrame {
 	okButton.addActionListener(new ActionListener() {
 	    /** Click on "Ok" button. */
 	    @Override
-	    public void actionPerformed(ActionEvent e) {
+	    public void actionPerformed(final ActionEvent e) {
 		// Validation
 		int nbBoats = 0;
 		for (BoatClassSpinner boatClassSpinner : boatClassSpinners)
@@ -153,6 +153,7 @@ public final class HostParametersView extends JFrame {
 		     */
 		    @Override
 		    public void run() {
+			// Next view
 			waitConnexionView.dispose();
 			new FleetPositioningView(game);
 		    }
