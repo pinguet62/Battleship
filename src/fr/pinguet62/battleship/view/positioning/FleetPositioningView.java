@@ -17,8 +17,11 @@ import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.socket.dto.PositionsDto;
+import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.game.GameView;
 import fr.pinguet62.battleship.view.positioning.SelectCase.State;
+import fr.pinguet62.utils.Consumer;
 
 /** View used to place {@link Boat}s in grid. */
 public final class FleetPositioningView extends JFrame implements
@@ -99,6 +102,10 @@ public final class FleetPositioningView extends JFrame implements
     /** The {@link JPanel}. */
     private final JPanel gridFleetPanel;
 
+    private boolean positionsReceived;
+
+    private WaitingView positionsWaitingView;
+
     /** The selected {@link Boat}. */
     private Boat selectedBoat;
 
@@ -115,20 +122,30 @@ public final class FleetPositioningView extends JFrame implements
      */
     public FleetPositioningView(final Game game) {
 	super("Fleet Positioning");
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	this.game = game;
-	Runnable onPositionsExchanged = new Runnable() {
+
+	// Positions reception
+	Consumer<PositionsDto> onPositionsReceived = new Consumer<PositionsDto>() {
 	    @Override
-	    public void run() {
-		if (game.getPlayerType().isHost()) {
+	    public void accept(final PositionsDto positionsDto) {
+		// TODO update model
+		positionsReceived = true;
 
-		} else {
-
+		// Waiting
+		if (positionsWaitingView != null) {
+		    positionsWaitingView.dispose();
+		    new GameView(game);
 		}
 	    }
 	};
-
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	if (game.getPlayerType().isHost())
+	    game.getHostSocketManager().setOnPositionsReceivedListener(
+		    onPositionsReceived);
+	else
+	    game.getGuestSocketManager().setOnPositionsReceivedListener(
+		    onPositionsReceived);
 
 	// Layout
 	Container mainContainer = getContentPane();
@@ -221,12 +238,37 @@ public final class FleetPositioningView extends JFrame implements
 		    boatView.setEnabled(true);
 		    allPlaced = false;
 		}
-	    if (allPlaced) {
-		// Next view
-		dispose();
-		new GameView(game);
-	    }
+	    if (allPlaced)
+		allPlaced();
 	}
+    }
+
+    /**
+     * All {@link Boat} placed in grid.
+     * <p>
+     * <ol>
+     * <li>Hide this frame;</li>
+     * <li>Send {@link PositionsDto} to other player;</li>
+     * <li>If user didn't received {@link PositionsDto} then show
+     * {@link WaitingView}, else show {@link GameView}.</li>
+     * </ol>
+     * 
+     * @author Pinguet62
+     */
+    private void allPlaced() {
+	dispose();
+
+	// Send positions
+	if (game.getPlayerType().isHost())
+	    game.getHostSocketManager().send(null); // TODO
+	else
+	    game.getGuestSocketManager().send(null); // TODO
+
+	// Next view
+	if (!positionsReceived)
+	    new WaitingView("Waiting guest positions...");
+	else
+	    new GameView(game);
     }
 
     /**

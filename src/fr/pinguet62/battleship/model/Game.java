@@ -14,26 +14,23 @@ public final class Game {
     /** The {@link BoatEntry}s. */
     private Collection<BoatEntry> boatEntries;
 
+    private final GuestSocketManager guestSocketManager = new GuestSocketManager(
+	    this);
+
     /** The height. */
     private int height = -1;
+
+    /** The {@link HostSocketManager}. */
+    private final HostSocketManager hostSocketManager = new HostSocketManager(
+	    this);
 
     /** The current user's {@link Fleet}. */
     private Fleet myFleet;
 
     /** The opponent user's {@link Fleet}. */
     private Fleet opponentFleet;
-
     /** Player type. */
     public final PlayerType playerType;
-
-    /** The {@link HostSocketManager}. */
-    private final HostSocketManager socketManager = new HostSocketManager(this);
-    private final GuestSocketManager guestSocketManager = new GuestSocketManager(
-	    this);
-
-    public GuestSocketManager getGuestSocketManager() {
-	return guestSocketManager;
-    }
 
     /** The width. */
     private int width = -1;
@@ -57,6 +54,10 @@ public final class Game {
 	return boatEntries;
     }
 
+    public GuestSocketManager getGuestSocketManager() {
+	return guestSocketManager;
+    }
+
     /**
      * Gets the height.
      * 
@@ -64,6 +65,15 @@ public final class Game {
      */
     public int getHeight() {
 	return height;
+    }
+
+    /**
+     * Gets the {@link HostSocketManager}.
+     * 
+     * @return The {@link HostSocketManager}.
+     */
+    public HostSocketManager getHostSocketManager() {
+	return hostSocketManager;
     }
 
     /**
@@ -94,15 +104,6 @@ public final class Game {
     }
 
     /**
-     * Gets the {@link HostSocketManager}.
-     * 
-     * @return The {@link HostSocketManager}.
-     */
-    public HostSocketManager getSocketManager() {
-	return socketManager;
-    }
-
-    /**
      * Gets the width.
      * 
      * @return The width.
@@ -118,9 +119,9 @@ public final class Game {
      *            The {@link ParametersDto}.
      */
     public void init(final ParametersDto parametersDto) {
-	this.width = parametersDto.getWidth();
-	this.height = parametersDto.getHeight();
-	this.boatEntries = parametersDto.getBoatEntries();
+	width = parametersDto.getWidth();
+	height = parametersDto.getHeight();
+	boatEntries = parametersDto.getBoatEntries();
 
 	myFleet = new Fleet(this);
 	opponentFleet = new Fleet(this);

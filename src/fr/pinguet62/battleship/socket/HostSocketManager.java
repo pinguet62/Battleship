@@ -37,6 +37,28 @@ public final class HostSocketManager {
     }
 
     /**
+     * Send message to client.
+     * 
+     * @param object
+     *            The message to send.
+     */
+    public void send(final Object object) {
+	myThread.send(object);
+    }
+
+    /**
+     * Sets the {@link Consumer} to execute after {@link PositionsDto}
+     * reception.
+     * 
+     * @param onPositionsReceived
+     *            The {@link Consumer} to execute.
+     */
+    public void setOnPositionsReceivedListener(
+	    final Consumer<PositionsDto> onPositionsReceived) {
+	myThread.setOnPositionsReceivedListener(onPositionsReceived);
+    }
+
+    /**
      * Sets the port.
      * 
      * @param port
@@ -76,9 +98,6 @@ public final class HostSocketManager {
 
 /** {@link Thread} who listen the client {@link Socket}. */
 class MyThread extends Thread {
-
-    /** The {@link Consumer} to execute after {@link AttackDto} reception. */
-    private Consumer<AttackDto> onAttackReceivedListener;
 
     /** The {@link Runnable} to execute after guest connection. */
     private Runnable onGuestConnectedListener;
@@ -191,7 +210,6 @@ class MyThread extends Thread {
      */
     public void setOnAttackReceivedListener(
 	    final Consumer<AttackDto> onAttackReceived) {
-	onAttackReceivedListener = onAttackReceived;
     }
 
     /**

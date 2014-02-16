@@ -44,6 +44,28 @@ public final class GuestSocketManager {
     }
 
     /**
+     * Send message to client.
+     * 
+     * @param object
+     *            The message to send.
+     */
+    public void send(final Object object) {
+	guestThread.send(object);
+    }
+
+    /**
+     * Sets the {@link Consumer} to execute after {@link PositionsDto}
+     * reception.
+     * 
+     * @param onPositionsReceived
+     *            The {@link Consumer} to execute.
+     */
+    public void setOnPositionsReceivedListener(
+	    final Consumer<PositionsDto> onPositionsReceived) {
+	guestThread.setOnPositionsReceivedListener(onPositionsReceived);
+    }
+
+    /**
      * Sets the port.
      * 
      * @param port

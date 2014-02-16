@@ -18,8 +18,10 @@ public final class WaitingView extends JFrame {
     public WaitingView(final String message) {
 	super("Waiting...");
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 	JLabel jLabel = new JLabel(message);
 	add(jLabel);
+
 	pack();
 	setVisible(true);
     }

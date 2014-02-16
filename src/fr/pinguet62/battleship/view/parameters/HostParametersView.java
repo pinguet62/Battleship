@@ -140,13 +140,13 @@ public final class HostParametersView extends JFrame {
 		final Game game = new Game(PlayerType.HOST);
 		game.init(new ParametersDto((int) valueWidthSize.getValue(),
 			(int) valueHeightSize.getValue(), boatEntries));
-		game.getSocketManager().setPort((Integer) portValue.getValue());
+		game.getHostSocketManager().setPort((Integer) portValue.getValue());
 
 		// Next view
 		dispose();
 		final WaitingView waitConnexionView = new WaitingView(
 			"Waiting guest connexion...");
-		game.getSocketManager().waitClientConnection(new Runnable() {
+		game.getHostSocketManager().waitClientConnection(new Runnable() {
 		    /**
 		     * Hide {@link WaitingView}.<br />
 		     * Show {@link FleetPositioningView}.
