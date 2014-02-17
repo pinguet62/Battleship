@@ -3,6 +3,7 @@ package fr.pinguet62.battleship.socket;
 import java.net.Socket;
 
 import fr.pinguet62.battleship.model.Game;
+import fr.pinguet62.battleship.socket.dto.AttackDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.PositionsDto;
 import fr.pinguet62.utils.Consumer;
@@ -45,6 +46,17 @@ public abstract class AbstractSocketManager {
      */
     public void send(final Object object) {
 	threadSocket.send(object);
+    }
+
+    /**
+     * Sets the {@link Consumer} to execute after {@link AttackDto} reception.
+     * 
+     * @param onAttackReceived
+     *            The {@link Consumer} to execute.
+     */
+    public void setOnAttackReceivedListener(
+	    final Consumer<AttackDto> onAttackReceived) {
+	threadSocket.setOnAttackReceivedListener(onAttackReceived);
     }
 
     /**

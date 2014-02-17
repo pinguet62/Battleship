@@ -5,6 +5,17 @@ import fr.pinguet62.battleship.model.boat.Boat;
 /** A box consists {@link Fleet}. */
 public final class Box {
 
+    /** The result of an attack. */
+    public enum AttackResult {
+	/** No {@link Boat} touched. */
+	FAILED, /**
+	 * All {@link Box} of {@link Boat} have been touched and the
+	 * {@link Boat} is sunk.
+	 */
+	SUNK, /** A {@link Box} of {@link Boat} are been touched. */
+	TOUCHED;
+    }
+
     /** If is attacked. */
     private boolean attacked = false;
 
@@ -40,12 +51,16 @@ public final class Box {
     /**
      * Attack this box.
      * 
-     * @return <code>true</code> if this attack touch a {@link Boat},
-     *         <code>false</code> otherwise.
+     * @return The {@link AttackResult}.
      */
-    public boolean attack() {
+    public AttackResult attack() {
 	attacked = true;
-	return boat != null;
+	if (boat == null)
+	    return AttackResult.FAILED;
+	else if (boat.isSunk())
+	    return AttackResult.SUNK;
+	else
+	    return AttackResult.TOUCHED;
     }
 
     /**

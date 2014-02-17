@@ -1,6 +1,5 @@
 package fr.pinguet62.battleship.view.game;
 
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,11 +8,13 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
 
 import fr.pinguet62.battleship.model.Game;
+import fr.pinguet62.battleship.model.Score;
+import fr.pinguet62.battleship.model.grid.Box.AttackResult;
 import fr.pinguet62.battleship.model.grid.Coordinates;
+import fr.pinguet62.battleship.socket.dto.AttackDto;
+import fr.pinguet62.battleship.view.game.BoxView.State;
 
 /** Duel view. */
 public final class GameView extends JFrame implements ActionListener {
@@ -21,8 +22,25 @@ public final class GameView extends JFrame implements ActionListener {
     /** Serial version UID. */
     private static final long serialVersionUID = -2190498449403789762L;
 
+    private final JLabel boatScoreHeaderMyfleet;
+
+    private final JLabel boatScoreHeaderOpponentfleet;
+
+    private final JLabel boxScoreHeaderMyfleet;
+
+    private final JLabel boxScoreHeaderOpponentfleet;
+
     /** The {@link Game}. */
     private final Game game;
+
+    /** {@link BoxView} of my fleet. */
+    private final BoxView[][] myBoxViewss;
+
+    /** If it my turn to play. */
+    private boolean myTurn;
+
+    /** {@link BoxView} of he opponent. */
+    private final BoxView[][] opponentBoxViewss;
 
     /**
      * Constructor.
@@ -35,76 +53,143 @@ public final class GameView extends JFrame implements ActionListener {
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	this.game = game;
+	myTurn = game.getPlayerType().isHost();
+	// game.getSocketManager().setOnAttackReceivedListener(
+	// new Consumer<AttackDto>() {
+	// /** {@link AttackDto} received. */
+	// @Override
+	// public void accept(final AttackDto attackDto) {
+	// Coordinates coordinates = attackDto.getCoordinates();
+	//
+	// // Update my fleet
+	// game.getMyFleet().getBox(coordinates).attack();
+	// boolean touched = game.getOpponentFleet()
+	// .getBox(coordinates).attack();
+	// myBoxViewss[coordinates.getY()][coordinates.getX()]
+	// .setState(touched ? State.TOUCHED
+	// : State.FAILED);
+	//
+	// myTurn = true;
+	// }
+	// });
 
 	// Layout
-	Container mainContainer = getContentPane();
-	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.X_AXIS));
+	setLayout(new GridLayout(1, 2, 5, 0));
 
-	// - Fleet
-	JPanel fleetPanel = new JPanel();
-	fleetPanel.setLayout(new BoxLayout(fleetPanel, BoxLayout.Y_AXIS));
-	mainContainer.add(fleetPanel);
-	// -- Title
-	JLabel fleetLabel = new JLabel("Adversaire");
-	fleetPanel.add(fleetLabel);
+	// - Opponent fleet
+	JPanel panelOpponentfleet = new JPanel();
+	panelOpponentfleet.setLayout(new BoxLayout(panelOpponentfleet,
+		BoxLayout.Y_AXIS));
+	add(panelOpponentfleet);
+	// -- Header
+	JPanel panelHeaderOpponentfleet = new JPanel();
+	panelHeaderOpponentfleet.setLayout(new BoxLayout(
+		panelHeaderOpponentfleet, BoxLayout.Y_AXIS));
+	panelOpponentfleet.add(panelHeaderOpponentfleet);
+	// --- Title
+	JLabel titleHeaderOpponentfleet = new JLabel("Adversaire");
+	panelHeaderOpponentfleet.add(titleHeaderOpponentfleet);
+	// --- Score
+	JPanel panelScoreHeaderOpponentFleet = new JPanel();
+	panelScoreHeaderOpponentFleet.setLayout(new GridLayout(1, 2));
+	panelHeaderOpponentfleet.add(panelScoreHeaderOpponentFleet);
+	// ---- Box
+	boxScoreHeaderOpponentfleet = new JLabel();
+	panelScoreHeaderOpponentFleet.add(boxScoreHeaderOpponentfleet);
+	// ---- Boat
+	boatScoreHeaderOpponentfleet = new JLabel();
+	panelScoreHeaderOpponentFleet.add(boatScoreHeaderOpponentfleet);
 	// -- Grid
 	JPanel gridFleetPanel = new JPanel();
 	gridFleetPanel.setLayout(new GridLayout(game.getHeight(), game
 		.getWidth()));
-	fleetPanel.add(gridFleetPanel);
+	panelOpponentfleet.add(gridFleetPanel);
 	// --- Buttons
+	opponentBoxViewss = new BoxView[game.getHeight()][game.getWidth()];
 	for (int y = 0; y < game.getHeight(); y++)
 	    for (int x = 0; x < game.getWidth(); x++) {
 		BoxView button = new BoxView(new Coordinates(x, y));
 		button.addActionListener(this);
 		gridFleetPanel.add(button);
+		opponentBoxViewss[y][x] = button;
 	    }
 
-	JSeparator seperator = new JSeparator(SwingConstants.VERTICAL);
-	mainContainer.add(seperator);
-
-	// - Opponent
-	JPanel opponentPanel = new JPanel();
-	opponentPanel.setLayout(new BoxLayout(opponentPanel, BoxLayout.Y_AXIS));
-	mainContainer.add(opponentPanel);
-	// -- Title
-	JLabel opponentLabel = new JLabel("Ma flotte");
-	opponentPanel.add(opponentLabel);
+	// - My fleet
+	JPanel panelMyfleet = new JPanel();
+	panelMyfleet.setLayout(new BoxLayout(panelMyfleet, BoxLayout.Y_AXIS));
+	add(panelMyfleet);
+	// -- Header
+	JPanel panelHeaderMyfleet = new JPanel();
+	panelHeaderMyfleet.setLayout(new BoxLayout(panelHeaderMyfleet,
+		BoxLayout.Y_AXIS));
+	panelMyfleet.add(panelHeaderMyfleet);
+	// --- Title
+	JLabel titleHeaderMyfleet = new JLabel("Moi");
+	panelHeaderMyfleet.add(titleHeaderMyfleet);
+	// --- Score
+	JPanel panelScoreHeaderMyFleet = new JPanel();
+	panelScoreHeaderMyFleet.setLayout(new GridLayout(1, 2));
+	panelHeaderMyfleet.add(panelScoreHeaderMyFleet);
+	// ---- Box
+	boxScoreHeaderMyfleet = new JLabel();
+	panelScoreHeaderMyFleet.add(boxScoreHeaderMyfleet);
+	// ---- Boat
+	boatScoreHeaderMyfleet = new JLabel();
+	panelScoreHeaderMyFleet.add(boatScoreHeaderMyfleet);
 	// -- Grid
 	JPanel gridOpponenPanel = new JPanel();
 	gridOpponenPanel.setLayout(new GridLayout(game.getHeight(), game
 		.getWidth()));
-	opponentPanel.add(gridOpponenPanel);
+	panelMyfleet.add(gridOpponenPanel);
 	// --- Buttons
+	myBoxViewss = new BoxView[game.getHeight()][game.getWidth()];
 	for (int y = 0; y < game.getHeight(); y++)
 	    for (int x = 0; x < game.getWidth(); x++) {
 		BoxView button = new BoxView(new Coordinates(x, y));
 		button.setEnabled(false);
 		gridOpponenPanel.add(button);
+		myBoxViewss[y][x] = button;
 	    }
 
+	updateScores();
 	pack();
 	setVisible(true);
     }
 
+    /**
+     * Click on a {@link BoxView}.
+     * 
+     * @param event
+     *            The {@link ActionEvent} with the {@link BoxView} source.
+     */
     @Override
     public void actionPerformed(final ActionEvent event) {
-	// BoxView boxView = (BoxView) event.getSource();
-	// Coordinates coordinates = boxView.getCoordinates();
-	// boolean touched = game.getFleet().getBox(coordinates).attack();
-	// boxView.setState(touched ? State.TOUCHED : State.FAILED);
+	if (!myTurn)
+	    return;
+
+	// Update opponent fleet
+	BoxView boxView = (BoxView) event.getSource();
+	Coordinates coordinates = boxView.getCoordinates();
+	AttackResult attackResult = game.getOpponentFleet().getBox(coordinates)
+		.attack();
+	boxView.setState(attackResult.equals(AttackResult.FAILED) ? State.FAILED
+		: State.TOUCHED);
+
+	game.getSocketManager().send(new AttackDto(coordinates));
+
+	myTurn = false;
     }
 
-    // public void refreshFleet(final Coordinates coordinates) {
-    // for (BoxView[] boxViews : fleet)
-    // for (BoxView boxView : boxViews)
-    // if (boxView.getCoordinates().equals(coordinates)) {
-    // Box target = game.getFleet().getBox(coordinates);
-    // Color color = BoxView.getState().getColor(target);
-    // boxView.setBackground(color);
-    // return;
-    // }
-    // throw new IllegalArgumentException("Coordinates not found.");
-    // }
+    /** Update {@link Score} of 2 players. */
+    private void updateScores() {
+	Score opponentScore = game.getOpponentFleet().getScore();
+	boxScoreHeaderOpponentfleet.setText(String.format("Box : %d/%d",
+		opponentScore.getActual(), opponentScore.getTotal()));
+	boatScoreHeaderOpponentfleet.setText("");
 
+	Score myScore = game.getOpponentFleet().getScore();
+	boxScoreHeaderMyfleet.setText(String.format("Box : %d/%d",
+		myScore.getActual(), myScore.getTotal()));
+	boatScoreHeaderMyfleet.setText("");
+    }
 }

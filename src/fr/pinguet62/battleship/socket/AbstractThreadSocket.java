@@ -53,6 +53,7 @@ public abstract class AbstractThreadSocket extends Thread {
      */
     public void setOnAttackReceivedListener(
 	    final Consumer<AttackDto> onAttackReceived) {
+	onAttackReceivedListener = onAttackReceived;
     }
 
     /**

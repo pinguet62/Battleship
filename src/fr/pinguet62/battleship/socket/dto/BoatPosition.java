@@ -3,7 +3,6 @@ package fr.pinguet62.battleship.socket.dto;
 import java.io.Serializable;
 
 import fr.pinguet62.battleship.model.boat.Boat;
-import fr.pinguet62.battleship.model.grid.Box;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 
 /** Store first and last {@link Coordinates} of a {@link Boat} class. */

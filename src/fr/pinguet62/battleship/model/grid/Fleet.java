@@ -16,9 +16,6 @@ public final class Fleet {
     /** The grid of {@link Box}. */
     private final Box[][] boxss;
 
-    /** The {@link Game}. */
-    private final Game model;
-
     /**
      * Constructor.
      * 
@@ -27,7 +24,6 @@ public final class Fleet {
      */
     public Fleet(final Game game) {
 	boxss = new Box[game.getHeight()][game.getWidth()];
-	this.model = game;
 	for (int y = 0; y < boxss.length; y++)
 	    for (int x = 0; x < boxss[y].length; x++)
 		boxss[y][x] = new Box(new Coordinates(x, y));
@@ -53,11 +49,12 @@ public final class Fleet {
 	int actual = 0;
 	int total = 0;
 	for (Box[] boxs : boxss)
-	    for (Box box : boxs) {
-		total++;
-		if (box.isAttacked())
-		    actual++;
-	    }
+	    for (Box box : boxs)
+		if (box.getBoat() != null) {
+		    total++;
+		    if (box.isAttacked())
+			actual++;
+		}
 	return new Score(actual, total);
     }
 
@@ -79,7 +76,7 @@ public final class Fleet {
      */
     public void insertBoat(final Class<? extends Boat> boatClass,
 	    final Coordinates first, final Coordinates last) {
-	if (first.getX() != last.getX() && first.getY() != last.getY())
+	if ((first.getX() != last.getX()) && (first.getY() != last.getY()))
 	    throw new IllegalArgumentException("Invalid coordinates.");
 
 	Boat boat = Boat.getInstance(boatClass);
