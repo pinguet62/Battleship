@@ -1,9 +1,9 @@
 package fr.pinguet62.battleship.socket;
 
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import fr.pinguet62.battleship.model.Game;
-import fr.pinguet62.battleship.socket.dto.ParametersDto;
 
 /** Class who interacts with guest {@link Socket}. */
 public final class HostSocketManager extends AbstractSocketManager {
@@ -19,29 +19,27 @@ public final class HostSocketManager extends AbstractSocketManager {
     }
 
     /**
-     * <ol>
-     * <li>Create the {@link MyThread} and run this.</li>
-     * <li>After guest connection, send {@link ParametersDto} to guest.</li>
-     * <li>After sending, execute the {@link Runnable} on parameter.</li>
-     * <ol>
+     * Create the {@link ServerSocket} into {@link HostThreadSocket} and wait
+     * guest connection.
      * 
-     * @param onParametersSent
-     *            The {@link Runnable} to execute at the end.
+     * @param onConnected
+     *            The {@link Runnable} to execute after guest connection.
      */
-    public void waitClientConnection(final Runnable onParametersSent) {
+    public void connect(final Runnable onConnected) {
 	// Thread
 	HostThreadSocket hostThreadSocket = new HostThreadSocket(port);
 	threadSocket = hostThreadSocket;
-	hostThreadSocket.setOnGuestConnectedListener(new Runnable() {
-	    /** Send {@link ParametersDto} to guest. */
-	    @Override
-	    public void run() {
-		ParametersDto parameters = new ParametersDto(game.getWidth(),
-			game.getHeight(), game.getBoatEntries());
-		threadSocket.send(parameters);
-		onParametersSent.run();
-	    }
-	});
+	hostThreadSocket.setOnGuestConnectedListener(onConnected);
+	// hostThreadSocket.setOnGuestConnectedListener(new Runnable() {
+	// /** Send {@link ParametersDto} to guest. */
+	// @Override
+	// public void run() {
+	// ParametersDto parameters = new ParametersDto(game.getWidth(),
+	// game.getHeight(), game.getBoatEntries());
+	// threadSocket.send(parameters);
+	// onParametersSent.run();
+	// }
+	// });
 	threadSocket.start();
     }
 

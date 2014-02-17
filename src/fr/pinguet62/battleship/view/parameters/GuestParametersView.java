@@ -63,27 +63,38 @@ public final class GuestParametersView extends JFrame {
 		// Game
 		final Game game = new Game(PlayerType.GUEST);
 
-		// Next view
+		// Next view: WaitingView
 		dispose();
 		final WaitingView waitParametersView = new WaitingView(
 			"Waiting host parameters...");
-		game.getGuestSocketManager()
-			.setPort((int) portValue.getValue());
-		game.getGuestSocketManager().connectToHost(
-			new Consumer<ParametersDto>() {
-			    /**
-			     * Initialize {@link Game}.<br />
-			     * Show {@link FleetPositioningView}.
-			     */
-			    @Override
-			    public void accept(final ParametersDto parametersDto) {
-				game.init(parametersDto);
 
-				// Next view
-				waitParametersView.dispose();
-				new FleetPositioningView(game);
-			    }
-			});
+		// Connection to host
+		game.getSocketManager().setPort((int) portValue.getValue());
+		game.getSocketManager().connect(new Runnable() {
+		    /** Method to execute after connection to host. */
+		    @Override
+		    public void run() {
+			game.getSocketManager()
+				.setOnParametersReceivedListener(
+					new Consumer<ParametersDto>() {
+					    /**
+					     * Method to execute after
+					     * {@link ParametersDto} reception.
+					     */
+					    @Override
+					    public void accept(
+						    final ParametersDto parametersDto) {
+						// Game initialization
+						game.init(parametersDto);
+
+						// Next view:
+						// FleetPositioningView
+						waitParametersView.dispose();
+						new FleetPositioningView(game);
+					    }
+					});
+		    }
+		});
 	    }
 	});
 	buttonPanel.add(okButton);

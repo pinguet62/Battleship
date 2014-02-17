@@ -103,11 +103,14 @@ public final class FleetPositioningView extends JFrame implements
     /** The {@link JPanel}. */
     private final JPanel gridFleetPanel;
 
-    /** My {@link PositionsDto}. */
+    /**
+     * My {@link PositionsDto}.<br />
+     * Store my {@link BoatPosition}s before sending to opponent.
+     */
     private PositionsDto myPositions = new PositionsDto(
 	    new ArrayList<BoatPosition>());
 
-    /** The opponent's {@link PositionsDto} received. */
+    /** If i have been received the opponent's {@link PositionsDto}. */
     private boolean opponentPositionsReceived;
 
     /** The {@link WaitingView} pending receipt of {@link PositionsDto}. */
@@ -131,34 +134,32 @@ public final class FleetPositioningView extends JFrame implements
 	this.game = game;
 
 	// Positions reception
-	Consumer<PositionsDto> onPositionsReceived = new Consumer<PositionsDto>() {
-	    @Override
-	    public void accept(final PositionsDto positionsDto) {
-		// Update opponent fleet
-		for (BoatPosition boatPosition : positionsDto
-			.getBoatPositions()) {
-		    Class<? extends Boat> boatClass = boatPosition
-			    .getBoatClass();
-		    Coordinates first = boatPosition.getFirstCoordinate();
-		    Coordinates last = boatPosition.getLastCoordinate();
-		    game.getOpponentFleet().insertBoat(boatClass, first, last);
-		}
+	game.getSocketManager().setOnPositionsReceivedListener(
+		new Consumer<PositionsDto>() {
+		    /** Method to execute after {@link PositionsDto} reception. */
+		    @Override
+		    public void accept(final PositionsDto positionsDto) {
+			// Update opponent fleet
+			for (BoatPosition boatPosition : positionsDto
+				.getBoatPositions()) {
+			    Class<? extends Boat> boatClass = boatPosition
+				    .getBoatClass();
+			    Coordinates first = boatPosition
+				    .getFirstCoordinate();
+			    Coordinates last = boatPosition.getLastCoordinate();
+			    game.getOpponentFleet().insertBoat(boatClass,
+				    first, last);
+			}
 
-		opponentPositionsReceived = true;
+			opponentPositionsReceived = true;
 
-		// Next view
-		if (positionsWaitingView != null) {
-		    positionsWaitingView.dispose();
-		    new GameView(game);
-		}
-	    }
-	};
-	if (game.getPlayerType().isHost())
-	    game.getHostSocketManager().setOnPositionsReceivedListener(
-		    onPositionsReceived);
-	else
-	    game.getGuestSocketManager().setOnPositionsReceivedListener(
-		    onPositionsReceived);
+			// Next view: GameView
+			if (positionsWaitingView != null) {
+			    positionsWaitingView.dispose();
+			    new GameView(game);
+			}
+		    }
+		});
 
 	// Layout
 	Container mainContainer = getContentPane();
@@ -171,10 +172,7 @@ public final class FleetPositioningView extends JFrame implements
 	    for (int i = 0; i < boatEntry.getNumber(); i++) {
 		final BoatView boatView = new BoatView(boatEntry.getBoatClass());
 		boatView.addActionListener(new ActionListener() {
-		    /**
-		     * Save selected {@link BoatView}.<br />
-		     * Refresh {@link BoatView}s.
-		     */
+		    /** Click on a {@link BoatView} */
 		    @Override
 		    public void actionPerformed(final ActionEvent e) {
 			// Save selection
@@ -266,19 +264,14 @@ public final class FleetPositioningView extends JFrame implements
      * <li>If user didn't received {@link PositionsDto} then show
      * {@link WaitingView}, else show {@link GameView}.</li>
      * </ol>
-     * 
-     * @author Pinguet62
      */
     private void allPlaced() {
 	dispose();
 
 	// Send positions
-	if (game.getPlayerType().isHost())
-	    game.getHostSocketManager().send(myPositions);
-	else
-	    game.getGuestSocketManager().send(myPositions);
+	game.getSocketManager().send(myPositions);
 
-	// Next view
+	// Next view: WaitingView if Positions not received, GameView otherwise
 	if (!opponentPositionsReceived)
 	    positionsWaitingView = new WaitingView(
 		    "Waiting opponent positions...");

@@ -3,6 +3,7 @@ package fr.pinguet62.battleship.model;
 import java.util.Collection;
 
 import fr.pinguet62.battleship.model.grid.Fleet;
+import fr.pinguet62.battleship.socket.AbstractSocketManager;
 import fr.pinguet62.battleship.socket.GuestSocketManager;
 import fr.pinguet62.battleship.socket.HostSocketManager;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
@@ -14,22 +15,18 @@ public final class Game {
     /** The {@link BoatEntry}s. */
     private Collection<BoatEntry> boatEntries;
 
-    private final GuestSocketManager guestSocketManager = new GuestSocketManager(
-	    this);
-
     /** The height. */
     private int height = -1;
 
-    /** The {@link HostSocketManager}. */
-    private final HostSocketManager hostSocketManager = new HostSocketManager(
-	    this);
+    /** The {@link AbstractSocketManager}. */
+    private final AbstractSocketManager socketManager;
 
     /** The current user's {@link Fleet}. */
     private Fleet myFleet;
 
     /** The opponent user's {@link Fleet}. */
     private Fleet opponentFleet;
-    
+
     /** Player type. */
     public final PlayerType playerType;
 
@@ -44,6 +41,11 @@ public final class Game {
      */
     public Game(final PlayerType playerType) {
 	this.playerType = playerType;
+
+	if (playerType.isHost())
+	    socketManager = new HostSocketManager(this);
+	else
+	    socketManager = new GuestSocketManager(this);
     }
 
     /**
@@ -53,10 +55,6 @@ public final class Game {
      */
     public Collection<BoatEntry> getBoatEntries() {
 	return boatEntries;
-    }
-
-    public GuestSocketManager getGuestSocketManager() {
-	return guestSocketManager;
     }
 
     /**
@@ -69,12 +67,12 @@ public final class Game {
     }
 
     /**
-     * Gets the {@link HostSocketManager}.
+     * Gets the {@link AbstractSocketManager}.
      * 
-     * @return The {@link HostSocketManager}.
+     * @return The {@link AbstractSocketManager}.
      */
-    public HostSocketManager getHostSocketManager() {
-	return hostSocketManager;
+    public AbstractSocketManager getSocketManager() {
+	return socketManager;
     }
 
     /**

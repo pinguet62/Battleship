@@ -3,6 +3,7 @@ package fr.pinguet62.battleship.socket;
 import java.net.Socket;
 
 import fr.pinguet62.battleship.model.Game;
+import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.PositionsDto;
 import fr.pinguet62.utils.Consumer;
 
@@ -29,6 +30,14 @@ public abstract class AbstractSocketManager {
     }
 
     /**
+     * Connection.
+     * 
+     * @param method
+     *            The {@link Runnable} to execute after connection.
+     */
+    public abstract void connect(final Runnable method);
+
+    /**
      * Send message to client.
      * 
      * @param object
@@ -36,6 +45,18 @@ public abstract class AbstractSocketManager {
      */
     public void send(final Object object) {
 	threadSocket.send(object);
+    }
+
+    /**
+     * Sets the {@link Consumer} to execute after {@link ParametersDto}
+     * reception.
+     * 
+     * @param onParametersReceived
+     *            The {@link Consumer} to execute.
+     */
+    public void setOnParametersReceivedListener(
+	    final Consumer<ParametersDto> onParametersReceived) {
+	threadSocket.setOnParametersReceivedListener(onParametersReceived);
     }
 
     /**

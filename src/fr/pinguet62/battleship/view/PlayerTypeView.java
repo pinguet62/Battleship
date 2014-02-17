@@ -29,6 +29,7 @@ public final class PlayerTypeView extends JFrame {
 	// - Host
 	JButton hostButton = new JButton("Host");
 	hostButton.addActionListener(new ActionListener() {
+	    /** Click on "Host" button. */
 	    @Override
 	    public void actionPerformed(final ActionEvent e) {
 		System.out.println("HOST");
@@ -40,6 +41,7 @@ public final class PlayerTypeView extends JFrame {
 	// - Guest
 	JButton guestButton = new JButton("Guest");
 	guestButton.addActionListener(new ActionListener() {
+	    /** Click on "Guest" button. */
 	    @Override
 	    public void actionPerformed(final ActionEvent e) {
 		System.out.println("GUEST");

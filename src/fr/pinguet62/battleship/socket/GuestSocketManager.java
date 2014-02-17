@@ -20,14 +20,16 @@ public final class GuestSocketManager extends AbstractSocketManager {
     }
 
     /**
-     * Connect to host.
+     * Connection to host.
      * 
      * @param onConnected
-     *            The method to execute after connection.
+     *            The {@link Runnable} to execute after connection to host, and
+     *            before {@link AbstractSocketManager} starting.
      */
-    public void connectToHost(final Consumer<ParametersDto> onConnected) {
+    @Override
+    public void connect(final Runnable onConnected) {
 	threadSocket = new GuestThreadSocket(port);
-	threadSocket.setOnParametersReceivedListener(onConnected);
+	onConnected.run();
 	threadSocket.start();
     }
 
