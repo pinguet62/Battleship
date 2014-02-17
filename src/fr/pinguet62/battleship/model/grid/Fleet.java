@@ -62,11 +62,13 @@ public final class Fleet {
     }
 
     /**
-     * Insert {@link Boat}.<br />
-     * Update {@link Fleet} {@link Box}ss and {@link Boat} {@link Box}s.
+     * Insert {@link Boat}. <br />
+     * Update {@link Box}ss of {@link Fleet} and {@link Box}s of {@link Boat}. <br />
+     * The first and last {@link Coordinates} must be aligned (vertical or
+     * horizontal).
      * 
-     * @param boat
-     *            The {@link Boat}.
+     * @param boatClass
+     *            The {@link Boat} class.
      * @param first
      *            The first {@link Coordinates} (top/left).
      * @param last
@@ -75,12 +77,15 @@ public final class Fleet {
      *             Invalid {@link Coordinates} or a {@link Boat} already exists
      *             in they positions.
      */
-    public void insertBoat(final Boat boat, final Coordinates first,
-	    final Coordinates last) {
+    public void insertBoat(final Class<? extends Boat> boatClass,
+	    final Coordinates first, final Coordinates last) {
 	if (first.getX() != last.getX() && first.getY() != last.getY())
 	    throw new IllegalArgumentException("Invalid coordinates.");
+
+	Boat boat = Boat.getInstance(boatClass);
+
 	// Vertical
-	else if (first.getX() == last.getX()) {
+	if (first.getX() == last.getX()) {
 	    final int x = first.getX();
 	    for (int y = first.getY(), i = 0; y <= last.getY(); y++, i++) {
 		Box box = new Box(new Coordinates(x, y), boat);
@@ -89,7 +94,7 @@ public final class Fleet {
 	    }
 	}
 	// Horizontal
-	else if (first.getY() == last.getY()) {
+	else {
 	    final int y = first.getY();
 	    for (int x = first.getX(), i = 0; x <= last.getX(); x++, i++) {
 		Box box = new Box(new Coordinates(x, y), boat);

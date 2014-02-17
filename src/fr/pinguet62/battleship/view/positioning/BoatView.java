@@ -10,30 +10,44 @@ public final class BoatView extends JButton {
     /** Serial version UID. */
     private static final long serialVersionUID = -334380936888307359L;
 
-    /** The {@link Boat}. */
-    private final Boat boat;
+    /** The {@link Boat} class. */
+    private final Class<? extends Boat> boatClass;
 
     /** If the {@link Boat} is placed. */
     private boolean placed = false;
 
+    /** The {@link Boat} size. */
+    private final int boatSize;
+
     /**
      * Constructor.
      * 
-     * @param boat
-     *            The {@link Boat}.
+     * @param boatClass
+     *            The {@link Boat} class.
      */
-    public BoatView(final Boat boat) {
-	this.boat = boat;
+    public BoatView(final Class<? extends Boat> boatClass) {
+	this.boatClass = boatClass;
+	Boat boat = Boat.getInstance(boatClass);
 	setText(String.format("%s (x%d)", boat.getName(), boat.getSize()));
+	boatSize = boat.getSize();
     }
 
     /**
-     * Gets the {@link Boat}.
+     * Gets the {@link Boat} class.
      * 
-     * @return The {@link Boat}.
+     * @return The {@link Boat} class.
      */
-    public Boat getBoat() {
-	return boat;
+    public Class<? extends Boat> getBoatClass() {
+	return boatClass;
+    }
+
+    /**
+     * Gets the {@link Boat} size.
+     * 
+     * @return The {@link Boat} size.
+     */
+    public int getBoatSize() {
+	return boatSize;
     }
 
     /**

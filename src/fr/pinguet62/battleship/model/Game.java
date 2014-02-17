@@ -29,6 +29,7 @@ public final class Game {
 
     /** The opponent user's {@link Fleet}. */
     private Fleet opponentFleet;
+    
     /** Player type. */
     public final PlayerType playerType;
 

@@ -17,6 +17,7 @@ import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.socket.dto.BoatPosition;
 import fr.pinguet62.battleship.socket.dto.PositionsDto;
 import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.game.GameView;
@@ -102,12 +103,15 @@ public final class FleetPositioningView extends JFrame implements
     /** The {@link JPanel}. */
     private final JPanel gridFleetPanel;
 
-    private boolean positionsReceived;
+    /** My {@link PositionsDto}. */
+    private PositionsDto myPositions = new PositionsDto(
+	    new ArrayList<BoatPosition>());
 
+    /** The opponent's {@link PositionsDto} received. */
+    private boolean opponentPositionsReceived;
+
+    /** The {@link WaitingView} pending receipt of {@link PositionsDto}. */
     private WaitingView positionsWaitingView;
-
-    /** The selected {@link Boat}. */
-    private Boat selectedBoat;
 
     /** The selected {@link BoatView}. */
     private BoatView selectedBoatView;
@@ -130,10 +134,19 @@ public final class FleetPositioningView extends JFrame implements
 	Consumer<PositionsDto> onPositionsReceived = new Consumer<PositionsDto>() {
 	    @Override
 	    public void accept(final PositionsDto positionsDto) {
-		// TODO update model
-		positionsReceived = true;
+		// Update opponent fleet
+		for (BoatPosition boatPosition : positionsDto
+			.getBoatPositions()) {
+		    Class<? extends Boat> boatClass = boatPosition
+			    .getBoatClass();
+		    Coordinates first = boatPosition.getFirstCoordinate();
+		    Coordinates last = boatPosition.getLastCoordinate();
+		    game.getOpponentFleet().insertBoat(boatClass, first, last);
+		}
 
-		// Waiting
+		opponentPositionsReceived = true;
+
+		// Next view
 		if (positionsWaitingView != null) {
 		    positionsWaitingView.dispose();
 		    new GameView(game);
@@ -156,9 +169,7 @@ public final class FleetPositioningView extends JFrame implements
 	mainContainer.add(boatsPanel);
 	for (BoatEntry boatEntry : game.getBoatEntries())
 	    for (int i = 0; i < boatEntry.getNumber(); i++) {
-		Class<? extends Boat> boatType = boatEntry.getBoatClass();
-		Boat boat = Boat.getInstance(boatType);
-		final BoatView boatView = new BoatView(boat);
+		final BoatView boatView = new BoatView(boatEntry.getBoatClass());
 		boatView.addActionListener(new ActionListener() {
 		    /**
 		     * Save selected {@link BoatView}.<br />
@@ -167,7 +178,6 @@ public final class FleetPositioningView extends JFrame implements
 		    @Override
 		    public void actionPerformed(final ActionEvent e) {
 			// Save selection
-			selectedBoat = boatView.getBoat();
 			selectedBoatView = boatView;
 			// Disable buttons
 			for (BoatView boatView : boatViews)
@@ -204,25 +214,28 @@ public final class FleetPositioningView extends JFrame implements
      */
     @Override
     public void actionPerformed(final ActionEvent event) {
-	if (selectedBoat == null)
+	if (selectedBoatView == null)
 	    return;
 
 	SelectCase clickCase = (SelectCase) event.getSource();
-
 	clickCase
 		.setState(clickCase.getState().equals(State.CHOOSED) ? State.SELECTABLE
 			: State.CHOOSED);
 
 	refresh();
 
-	// Count ok
+	// Boat placed
 	List<SelectCase> choosedCases = getSelectedCases(State.CHOOSED);
-	if (choosedCases.size() == selectedBoat.getSize()) {
-	    // Place boat in fleet
-	    game.getMyFleet().insertBoat(selectedBoat,
-		    choosedCases.get(0).getCoordinates(),
-		    choosedCases.get(choosedCases.size() - 1).getCoordinates());
-	    selectedBoat = null;
+	if (choosedCases.size() == selectedBoatView.getBoatSize()) {
+	    Class<? extends Boat> boatClass = selectedBoatView.getBoatClass();
+	    Coordinates first = choosedCases.get(0).getCoordinates();
+	    Coordinates last = choosedCases.get(choosedCases.size() - 1)
+		    .getCoordinates();
+	    // Insert into my fleet
+	    game.getMyFleet().insertBoat(boatClass, first, last);
+	    // Save BoatPosition
+	    myPositions.getBoatPositions().add(
+		    new BoatPosition(boatClass, first, last));
 
 	    // Refresh
 	    for (SelectCase choosedCase : choosedCases)
@@ -238,6 +251,7 @@ public final class FleetPositioningView extends JFrame implements
 		    boatView.setEnabled(true);
 		    allPlaced = false;
 		}
+	    selectedBoatView = null;
 	    if (allPlaced)
 		allPlaced();
 	}
@@ -260,13 +274,14 @@ public final class FleetPositioningView extends JFrame implements
 
 	// Send positions
 	if (game.getPlayerType().isHost())
-	    game.getHostSocketManager().send(null); // TODO
+	    game.getHostSocketManager().send(myPositions);
 	else
-	    game.getGuestSocketManager().send(null); // TODO
+	    game.getGuestSocketManager().send(myPositions);
 
 	// Next view
-	if (!positionsReceived)
-	    new WaitingView("Waiting guest positions...");
+	if (!opponentPositionsReceived)
+	    positionsWaitingView = new WaitingView(
+		    "Waiting opponent positions...");
 	else
 	    new GameView(game);
     }
@@ -356,9 +371,9 @@ public final class FleetPositioningView extends JFrame implements
 	    // Cross
 	    // - horizontal
 	    int left = getLastAvailable(selected, Direction.LEFT,
-		    selectedBoat.getSize() - 1);
+		    selectedBoatView.getBoatSize() - 1);
 	    int right = getLastAvailable(selected, Direction.RIGHT,
-		    selectedBoat.getSize() - 1);
+		    selectedBoatView.getBoatSize() - 1);
 	    for (int i = 0; i < left; i++)
 		if (!casess[selected.getY()][i].getState().equals(State.BOAT))
 		    casess[selected.getY()][i].setState(State.UNSELECTABLE);
@@ -369,9 +384,9 @@ public final class FleetPositioningView extends JFrame implements
 		    casess[selected.getY()][i].setState(State.UNSELECTABLE);
 	    // - vertical
 	    int top = getLastAvailable(selected, Direction.TOP,
-		    selectedBoat.getSize() - 1);
+		    selectedBoatView.getBoatSize() - 1);
 	    int bottom = getLastAvailable(selected, Direction.BOTTOM,
-		    selectedBoat.getSize() - 1);
+		    selectedBoatView.getBoatSize() - 1);
 	    for (int j = 0; j < top; j++)
 		if (!casess[j][selected.getX()].getState().equals(State.BOAT))
 		    casess[j][selected.getX()].setState(State.UNSELECTABLE);
@@ -399,7 +414,7 @@ public final class FleetPositioningView extends JFrame implements
 		for (int i = first.getX(); i <= last.getX(); i++)
 		    casess[y][i].setState(State.CHOOSED);
 		// Available space
-		int size = selectedBoat.getSize()
+		int size = selectedBoatView.getBoatSize()
 			- ((last.getX() - first.getX()) + 1);
 		int left = getLastAvailable(first, Direction.LEFT, size);
 		int right = getLastAvailable(last, Direction.RIGHT, size);
@@ -425,7 +440,7 @@ public final class FleetPositioningView extends JFrame implements
 		for (int j = first.getY(); j <= last.getY(); j++)
 		    casess[j][x].setState(State.CHOOSED);
 		// Available space
-		int size = selectedBoat.getSize()
+		int size = selectedBoatView.getBoatSize()
 			- ((last.getY() - first.getY()) + 1);
 		int top = getLastAvailable(first, Direction.TOP, size);
 		int bottom = getLastAvailable(last, Direction.BOTTOM, size);

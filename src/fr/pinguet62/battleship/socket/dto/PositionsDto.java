@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import fr.pinguet62.battleship.model.boat.Boat;
-import fr.pinguet62.battleship.model.grid.Box;
 
 /** Store positions of {@link Boat}s. */
 public final class PositionsDto implements Serializable {
@@ -13,8 +12,8 @@ public final class PositionsDto implements Serializable {
     /** Serial version UID. */
     private static final long serialVersionUID = -9107150373490492463L;
 
-    /** The {@link Boat}s. */
-    private final Collection<Boat> boats;
+    /** The {@link BoatPosition}s. */
+    private final Collection<BoatPosition> boatPositions;
 
     /**
      * Constructor.
@@ -22,8 +21,8 @@ public final class PositionsDto implements Serializable {
      * @param boats
      *            The {@link Boat}s.
      */
-    public PositionsDto(final Collection<Boat> boats) {
-	this.boats = boats;
+    public PositionsDto(final Collection<BoatPosition> boatPositions) {
+	this.boatPositions = boatPositions;
     }
 
     /**
@@ -31,26 +30,21 @@ public final class PositionsDto implements Serializable {
      * 
      * @return The {@link Boat}s.
      */
-    public Collection<Boat> getBoats() {
-	return boats;
+    public Collection<BoatPosition> getBoatPositions() {
+	return boatPositions;
     }
 
     @Override
     public String toString() {
-	String lineSeparator = System.getProperty("line.separator");
-	StringBuilder sBuilder = new StringBuilder();
-	for (Iterator<Boat> it = boats.iterator(); it.hasNext();) {
-	    Boat boat = it.next();
-	    Box[] boxs = boat.getBoxs();
-	    if (boxs.length == 0)
-		sBuilder.append(boat.getName() + " ?");
-	    else
-		sBuilder.append(String.format("%s - %s to %s", boat.getName(),
-			boxs[0], boxs[boxs.length - 1]));
+	StringBuilder sBuilder = new StringBuilder("[");
+	for (Iterator<BoatPosition> it = boatPositions.iterator(); it.hasNext();) {
+	    BoatPosition boatPosition = it.next();
+	    sBuilder.append(boatPosition.toString());
 	    if (it.hasNext())
-		sBuilder.append(lineSeparator);
+		sBuilder.append(", ");
 	}
-	return super.toString();
+	sBuilder.append("]");
+	return sBuilder.toString();
     }
 
 }
