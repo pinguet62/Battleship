@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <project name="Battleship" basedir="." default="run">
 	<!-- Properties -->
-	<property name="bin.dir" location="bin" />
+	<property name="bin.dir" location="build/bin" />
 	<property name="doc.dir" location="doc/javadoc" />
-	<property name="jar.dir" location="Battleship.jar" />
+	<property name="jar.dir" location="build/Battleship.jar" />
 	<property name="src.dir" location="src" />
 
 	<!-- Clean -->

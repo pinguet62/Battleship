@@ -1,5 +1,2 @@
-.classpath
-.project
-*.jar
-/bin
+/build
 /doc/javadoc
