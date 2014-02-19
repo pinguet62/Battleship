@@ -18,8 +18,8 @@ public final class PositionsDto implements Serializable {
     /**
      * Constructor.
      * 
-     * @param boats
-     *            The {@link Boat}s.
+     * @param boatPositions
+     *            The {@link BoatPosition}s.
      */
     public PositionsDto(final Collection<BoatPosition> boatPositions) {
 	this.boatPositions = boatPositions;

@@ -3,6 +3,7 @@ package fr.pinguet62.battleship.socket;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -22,10 +23,12 @@ final class HostThreadSocket extends AbstractThreadSocket {
      * The server {@link Socket}.<br />
      * Initialize the server {@link Socket}.
      * 
+     * @param inetAddress
+     *            The server {@link InetAddress}.
      * @param port
      *            The port of {@link Socket}.
      */
-    public HostThreadSocket(final int port) {
+    public HostThreadSocket(final InetAddress inetAddress, final int port) {
 	// Server socket
 	try {
 	    socketServeur = new ServerSocket(port);

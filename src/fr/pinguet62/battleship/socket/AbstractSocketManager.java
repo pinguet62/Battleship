@@ -1,5 +1,6 @@
 package fr.pinguet62.battleship.socket;
 
+import java.net.InetAddress;
 import java.net.Socket;
 
 import fr.pinguet62.battleship.model.Game;
@@ -13,6 +14,9 @@ public abstract class AbstractSocketManager {
 
     /** The {@link Game}. */
     protected final Game game;
+
+    /** The {@link InetAddress}. */
+    protected InetAddress inetAddress;
 
     /** The port of {@link Socket}. */
     protected int port = -1;
@@ -46,6 +50,17 @@ public abstract class AbstractSocketManager {
      */
     public void send(final Object object) {
 	threadSocket.send(object);
+    }
+
+    /**
+     * 
+     * Gets the {@link InetAddress}.
+     * 
+     * @param inetAddress
+     *            The {@link InetAddress}.
+     */
+    public void setInetAddress(final InetAddress inetAddress) {
+	this.inetAddress = inetAddress;
     }
 
     /**

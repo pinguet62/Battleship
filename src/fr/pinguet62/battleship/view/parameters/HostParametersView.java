@@ -1,6 +1,5 @@
 package fr.pinguet62.battleship.view.parameters;
 
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +12,6 @@ import java.util.LinkedHashSet;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -29,6 +27,7 @@ import fr.pinguet62.battleship.model.boat.Submarine;
 import fr.pinguet62.battleship.model.boat.TorpedoBoat;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
+import fr.pinguet62.battleship.view.Frame;
 import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
 
@@ -36,7 +35,7 @@ import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
  * View where host chose port of the {@link Socket}, the size of grid, and
  * {@link Boat} types with the number.
  */
-public final class HostParametersView extends JFrame {
+public final class HostParametersView extends Frame {
 
     /** Serial version UID. */
     private static final long serialVersionUID = -7022220519762450381L;
@@ -52,30 +51,26 @@ public final class HostParametersView extends JFrame {
     /** Constructor. */
     public HostParametersView() {
 	super("Battleship");
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	// Layout
-	Container mainContainer = getContentPane();
-	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
-
-	// - Port
-	JPanel portPanel = new JPanel();
-	portPanel.setBorder(BorderFactory.createTitledBorder("Server"));
-	portPanel.setLayout(new GridLayout(1, 2));
-	mainContainer.add(portPanel);
+	// - Server
+	JPanel serverPanel = new JPanel();
+	serverPanel.setBorder(BorderFactory.createTitledBorder("Server"));
+	serverPanel.setLayout(new GridLayout(1, 2));
+	add(serverPanel);
 	// -- Title
 	JLabel portTitle = new JLabel("Port");
-	portPanel.add(portTitle);
+	serverPanel.add(portTitle);
 	// -- Value
 	// 49152
 	final JSpinner portValue = new JSpinner(new SpinnerNumberModel(49152,
 		1, 65535, 1));
-	portPanel.add(portValue);
+	serverPanel.add(portValue);
 	// - Size
 	JPanel sizePanel = new JPanel();
 	sizePanel.setBorder(BorderFactory.createTitledBorder("Size"));
 	sizePanel.setLayout(new GridLayout(2, 2));
-	mainContainer.add(sizePanel);
+	add(sizePanel);
 	// -- Width
 	// --- Title
 	JLabel titleWidthSize = new JLabel("Width");
@@ -96,7 +91,7 @@ public final class HostParametersView extends JFrame {
 	JPanel fleetPanel = new JPanel();
 	fleetPanel.setBorder(BorderFactory.createTitledBorder("Fleet"));
 	fleetPanel.setLayout(new GridLayout(boatClasses.size(), 2));
-	mainContainer.add(fleetPanel);
+	add(fleetPanel);
 	for (Class<? extends Boat> boatClass : boatClasses) {
 	    // Label
 	    Boat boat = Boat.getInstance(boatClass);
@@ -111,7 +106,7 @@ public final class HostParametersView extends JFrame {
 	// - Button
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-	mainContainer.add(buttonPanel);
+	add(buttonPanel);
 	// -- Ok
 	JButton okButton = new JButton("Ok");
 	okButton.addActionListener(new ActionListener() {
@@ -146,7 +141,7 @@ public final class HostParametersView extends JFrame {
 		final WaitingView waitConnexionView = new WaitingView(
 			"Waiting guest connexion...");
 
-		// Run server
+		// Run host server
 		game.getSocketManager().setPort((Integer) portValue.getValue());
 		game.getSocketManager().connect(new Runnable() {
 		    /** {@link Runnable} to execute after guest connection. */
@@ -167,7 +162,6 @@ public final class HostParametersView extends JFrame {
 	});
 	buttonPanel.add(okButton);
 
-	pack();
 	setVisible(true);
     }
 

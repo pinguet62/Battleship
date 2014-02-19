@@ -1,6 +1,5 @@
 package fr.pinguet62.battleship.view.positioning;
 
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,23 +9,22 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.boat.Boat;
 import fr.pinguet62.battleship.model.grid.Coordinates;
-import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
 import fr.pinguet62.battleship.socket.dto.BoatPosition;
+import fr.pinguet62.battleship.socket.dto.ParametersDto.BoatEntry;
 import fr.pinguet62.battleship.socket.dto.PositionsDto;
+import fr.pinguet62.battleship.view.Frame;
 import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.game.GameView;
 import fr.pinguet62.battleship.view.positioning.SelectCase.State;
 import fr.pinguet62.utils.Consumer;
 
 /** View used to place {@link Boat}s in grid. */
-public final class FleetPositioningView extends JFrame implements
-	ActionListener {
+public final class FleetPositioningView extends Frame implements ActionListener {
 
     /** The four directions. */
     private enum Direction {
@@ -124,12 +122,10 @@ public final class FleetPositioningView extends JFrame implements
      * 
      * @param game
      *            The {@link Game}.
-     * @param boats
-     *            The {@link Boat}s to place.
      */
     public FleetPositioningView(final Game game) {
 	super("Fleet Positioning");
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
 
 	this.game = game;
 
@@ -161,13 +157,10 @@ public final class FleetPositioningView extends JFrame implements
 		    }
 		});
 
-	// Layout
-	Container mainContainer = getContentPane();
-	mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.X_AXIS));
 	// - Boats
 	boatsPanel = new JPanel();
 	boatsPanel.setLayout(new BoxLayout(boatsPanel, BoxLayout.Y_AXIS));
-	mainContainer.add(boatsPanel);
+	add(boatsPanel);
 	for (BoatEntry boatEntry : game.getBoatEntries())
 	    for (int i = 0; i < boatEntry.getNumber(); i++) {
 		final BoatView boatView = new BoatView(boatEntry.getBoatClass());
@@ -189,7 +182,7 @@ public final class FleetPositioningView extends JFrame implements
 	gridFleetPanel = new JPanel();
 	gridFleetPanel.setLayout(new GridLayout(game.getHeight(), game
 		.getWidth()));
-	mainContainer.add(gridFleetPanel);
+	add(gridFleetPanel);
 	// -- Buttons
 	casess = new SelectCase[game.getHeight()][game.getWidth()];
 	for (int y = 0; y < game.getHeight(); y++)
@@ -200,7 +193,6 @@ public final class FleetPositioningView extends JFrame implements
 		casess[y][x] = button;
 	    }
 
-	pack();
 	setVisible(true);
     }
 

@@ -26,7 +26,7 @@ public final class GuestSocketManager extends AbstractSocketManager {
      */
     @Override
     public void connect(final Runnable onConnected) {
-	threadSocket = new GuestThreadSocket(port);
+	threadSocket = new GuestThreadSocket(inetAddress, port);
 	onConnected.run();
 	threadSocket.start();
     }

@@ -26,20 +26,10 @@ public final class HostSocketManager extends AbstractSocketManager {
      *            The {@link Runnable} to execute after guest connection.
      */
     public void connect(final Runnable onConnected) {
-	// Thread
-	HostThreadSocket hostThreadSocket = new HostThreadSocket(port);
+	HostThreadSocket hostThreadSocket = new HostThreadSocket(inetAddress,
+		port);
 	threadSocket = hostThreadSocket;
 	hostThreadSocket.setOnGuestConnectedListener(onConnected);
-	// hostThreadSocket.setOnGuestConnectedListener(new Runnable() {
-	// /** Send {@link ParametersDto} to guest. */
-	// @Override
-	// public void run() {
-	// ParametersDto parameters = new ParametersDto(game.getWidth(),
-	// game.getHeight(), game.getBoatEntries());
-	// threadSocket.send(parameters);
-	// onParametersSent.run();
-	// }
-	// });
 	threadSocket.start();
     }
 

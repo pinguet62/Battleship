@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -14,10 +13,11 @@ import fr.pinguet62.battleship.model.Score;
 import fr.pinguet62.battleship.model.grid.Box.AttackResult;
 import fr.pinguet62.battleship.model.grid.Coordinates;
 import fr.pinguet62.battleship.socket.dto.AttackDto;
+import fr.pinguet62.battleship.view.Frame;
 import fr.pinguet62.battleship.view.game.BoxView.State;
 
 /** Duel view. */
-public final class GameView extends JFrame implements ActionListener {
+public final class GameView extends Frame implements ActionListener {
 
     /** Serial version UID. */
     private static final long serialVersionUID = -2190498449403789762L;
@@ -50,7 +50,6 @@ public final class GameView extends JFrame implements ActionListener {
      */
     public GameView(final Game game) {
 	super("Battleship");
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	this.game = game;
 	myTurn = game.getPlayerType().isHost();
@@ -152,7 +151,6 @@ public final class GameView extends JFrame implements ActionListener {
 	    }
 
 	updateScores();
-	pack();
 	setVisible(true);
     }
 

@@ -1,5 +1,7 @@
 package fr.pinguet62.battleship.socket;
 
+import java.net.Socket;
+
 /** {@link Exception} threw when an error occurred in the {@link Socket}. */
 public final class SocketException extends RuntimeException {
 

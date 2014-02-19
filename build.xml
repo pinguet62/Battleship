@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="Battleship" basedir="." default="main">
+	<!-- Properties -->
+	<property name="bin.dir" location="bin" />
+	<property name="doc.dir" location="doc" />
+	<property name="src.dir" location="src" />
+
+	<!-- Clean -->
+	<target name="clean">
+		<delete dir="${bin.dir}" />
+		<delete dir="${doc.dir}" />
+	</target>
+
+	<!-- Create target folders -->
+	<target name="makedir">
+		<mkdir dir="${bin.dir}" />
+		<mkdir dir="${doc.dir}" />
+	</target>
+
+	<!-- Javadoc -->
+	<target name="doc" depends="clean, makedir">
+		<javadoc packagenames="src" sourcepath="${src.dir}" destdir="${doc.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**" />
+			</fileset>
+		</javadoc>
+	</target>
+
+	<!-- Compile -->
+	<target name="compile" depends="clean, makedir">
+		<javac destdir="${bin.dir}" includeantruntime="false" srcdir="${src.dir}" />
+	</target>
+
+	<!-- Deployable JAR -->
+	<target name="jar" depends="compile">
+		<jar destfile="Battleship.jar" basedir="${bin.dir}" />
+	</target>
+
+	<!-- Main -->
+	<target name="main" depends="doc, jar" />
+</project>
