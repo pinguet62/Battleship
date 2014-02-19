@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import fr.pinguet62.battleship.model.Game;
@@ -15,6 +16,7 @@ import fr.pinguet62.battleship.model.grid.Coordinates;
 import fr.pinguet62.battleship.socket.dto.AttackDto;
 import fr.pinguet62.battleship.view.Frame;
 import fr.pinguet62.battleship.view.game.BoxView.State;
+import fr.pinguet62.utils.Consumer;
 
 /** Duel view. */
 public final class GameView extends Frame implements ActionListener {
@@ -53,24 +55,27 @@ public final class GameView extends Frame implements ActionListener {
 
 	this.game = game;
 	myTurn = game.getPlayerType().isHost();
-	// game.getSocketManager().setOnAttackReceivedListener(
-	// new Consumer<AttackDto>() {
-	// /** {@link AttackDto} received. */
-	// @Override
-	// public void accept(final AttackDto attackDto) {
-	// Coordinates coordinates = attackDto.getCoordinates();
-	//
-	// // Update my fleet
-	// game.getMyFleet().getBox(coordinates).attack();
-	// boolean touched = game.getOpponentFleet()
-	// .getBox(coordinates).attack();
-	// myBoxViewss[coordinates.getY()][coordinates.getX()]
-	// .setState(touched ? State.TOUCHED
-	// : State.FAILED);
-	//
-	// myTurn = true;
-	// }
-	// });
+	game.getSocketManager().setOnAttackReceivedListener(
+		new Consumer<AttackDto>() {
+		    /** {@link AttackDto} received. */
+		    @Override
+		    public void accept(final AttackDto attackDto) {
+			Coordinates coordinates = attackDto.getCoordinates();
+
+			// Update my fleet
+			AttackResult attackResult = game.getMyFleet()
+				.getBox(coordinates).attack();
+			State newState = attackResult
+				.equals(AttackResult.FAILED) ? State.FAILED
+				: State.TOUCHED;
+			myBoxViewss[coordinates.getY()][coordinates.getX()]
+				.setState(newState);
+
+			updateScores();
+
+			myTurn = true;
+		    }
+		});
 
 	// Layout
 	setLayout(new GridLayout(1, 2, 5, 0));
@@ -173,6 +178,8 @@ public final class GameView extends Frame implements ActionListener {
 	boxView.setState(attackResult.equals(AttackResult.FAILED) ? State.FAILED
 		: State.TOUCHED);
 
+	updateScores();
+
 	game.getSocketManager().send(new AttackDto(coordinates));
 
 	myTurn = false;
@@ -184,10 +191,32 @@ public final class GameView extends Frame implements ActionListener {
 	boxScoreHeaderOpponentfleet.setText(String.format("Box : %d/%d",
 		opponentScore.getActual(), opponentScore.getTotal()));
 	boatScoreHeaderOpponentfleet.setText("");
+	if (opponentScore.isWin()) {
+	    end("Winner!");
+	    return;
+	}
 
-	Score myScore = game.getOpponentFleet().getScore();
+	Score myScore = game.getMyFleet().getScore();
 	boxScoreHeaderMyfleet.setText(String.format("Box : %d/%d",
 		myScore.getActual(), myScore.getTotal()));
 	boatScoreHeaderMyfleet.setText("");
+	if (myScore.isWin()) {
+	    end("Looser!");
+	    return;
+	}
     }
+
+    /**
+     * Show result and quit game.
+     * 
+     * @param message
+     *            The message to show.
+     */
+    private void end(final String message) {
+	dispose();
+	JOptionPane.showMessageDialog(this, message, "End",
+		JOptionPane.INFORMATION_MESSAGE);
+	game.getSocketManager().stop();
+    }
+
 }

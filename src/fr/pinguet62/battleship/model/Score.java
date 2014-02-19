@@ -42,4 +42,13 @@ public final class Score {
 	return total;
     }
 
+    /**
+     * Gets if score is maximal.
+     * 
+     * @return Result.
+     */
+    public boolean isWin() {
+	return actual == total;
+    }
+
 }

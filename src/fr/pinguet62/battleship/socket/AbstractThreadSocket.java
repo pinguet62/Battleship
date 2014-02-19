@@ -3,6 +3,7 @@ package fr.pinguet62.battleship.socket;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import fr.pinguet62.battleship.socket.dto.AttackDto;
@@ -78,6 +79,14 @@ public abstract class AbstractThreadSocket extends Thread {
     public void setOnPositionsReceivedListener(
 	    final Consumer<PositionsDto> onPositionsReceived) {
 	onPositionsReceivedListener = onPositionsReceived;
+    }
+
+    /** Close the {@link Socket} or {@link ServerSocket} and stop the thread. */
+    public void closeAndStop() {
+	try {
+	    socket.close();
+	} catch (IOException e) {
+	}
     }
 
 }

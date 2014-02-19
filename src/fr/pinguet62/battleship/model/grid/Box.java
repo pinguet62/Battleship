@@ -17,7 +17,7 @@ public final class Box {
     }
 
     /** If is attacked. */
-    private boolean attacked = false;
+    private boolean attacked;
 
     /** The {@link Boat}. */
     private final Boat boat;

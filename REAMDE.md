@@ -4,6 +4,14 @@ Battleship
 ## Compilation
 
 
+## Running
+
+To run the application:
+```
+ant run
+ant run build.xml
+ant run /path/to/build.xml
+```
 
 ## Documentation
 
@@ -12,6 +20,8 @@ Battleship
 To generate the javadoc you must execute:
 ```
 ant javadoc
+ant javadoc build.xml
+ant javadoc /path/to/build.xml
 ```
 
 The documentation will be generated into [`doc/javadoc/`](doc/javadoc/) folder.  

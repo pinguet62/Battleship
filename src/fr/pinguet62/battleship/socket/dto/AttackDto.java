@@ -35,4 +35,9 @@ public class AttackDto implements Serializable {
 	return coordinates;
     }
 
+    @Override
+    public String toString() {
+	return coordinates.toString();
+    }
+    
 }

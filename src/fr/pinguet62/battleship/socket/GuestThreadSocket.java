@@ -60,7 +60,7 @@ final class GuestThreadSocket extends AbstractThreadSocket {
 		    "Error receiving boat positions from guest.", exception);
 	}
 
-	// Positioning
+	// Positions
 	try {
 	    System.out.println("Waiting host positions...");
 	    ObjectInputStream objectInputStream = new ObjectInputStream(
@@ -78,11 +78,12 @@ final class GuestThreadSocket extends AbstractThreadSocket {
 	while (true) {
 	    // Attack
 	    try {
-		System.out.println("Waiting host positions...");
+		System.out.println("Waiting host attack...");
 		ObjectInputStream objectInputStream = new ObjectInputStream(
 			inputStream);
 		AttackDto attackDto = (AttackDto) objectInputStream
 			.readObject();
+		System.out.println("Attack received: " + attackDto);
 		if (onAttackReceivedListener != null)
 		    onAttackReceivedListener.accept(attackDto);
 	    } catch (IOException | ClassNotFoundException exception) {

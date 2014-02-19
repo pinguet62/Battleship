@@ -1,6 +1,7 @@
 package fr.pinguet62.battleship.socket;
 
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import fr.pinguet62.battleship.model.Game;
@@ -106,6 +107,11 @@ public abstract class AbstractSocketManager {
      */
     public void setPort(final int port) {
 	this.port = port;
+    }
+
+    /** Close the {@link Socket} or {@link ServerSocket} and stop the thread. */
+    public void stop() {
+	threadSocket.closeAndStop();
     }
 
 }
