@@ -2,7 +2,7 @@
 <project name="Battleship" basedir="." default="main">
 	<!-- Properties -->
 	<property name="bin.dir" location="bin" />
-	<property name="doc.dir" location="doc" />
+	<property name="doc.dir" location="doc/javadoc" />
 	<property name="src.dir" location="src" />
 
 	<!-- Clean -->

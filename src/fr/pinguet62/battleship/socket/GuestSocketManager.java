@@ -18,11 +18,15 @@ public final class GuestSocketManager extends AbstractSocketManager {
     }
 
     /**
-     * Connection to host.
+     * Create the {@link GuestThreadSocket} and {@link Socket} to connect host.<br />
+     * If successful connection, execute the method, otherwise throws
+     * {@link SocketException}.<br />
+     * Start {@link GuestThreadSocket}.
      * 
      * @param onConnected
-     *            The {@link Runnable} to execute after connection to host, and
-     *            before {@link AbstractSocketManager} starting.
+     *            The {@link Runnable} to execute after connection to host.
+     * @throws SocketException
+     *             Error during connection to host.
      */
     @Override
     public void connect(final Runnable onConnected) {

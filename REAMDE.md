@@ -1,11 +1,28 @@
 Battleship
 ==========
 
-## Sequence diagram
+## Compilation
+
+
+
+## Documentation
+
+### Javadoc
+
+To generate the javadoc you must execute:
+```
+ant javadoc
+```
+
+The documentation will be generated into [`doc/javadoc/`](doc/javadoc/) folder.  
+The index page is [`doc/javadoc/index.html`](doc/javadoc/index.html).
+
+### Sequence diagram
+
 
 URL : https://www.websequencediagrams.com/#
 
-### General
+#### General
 
 ```
 title Exchanges between host and guest
@@ -50,9 +67,9 @@ loop Jeu en cours
 end
 ```
 
-### Details
+#### Details
 
-#### Host
+##### Host
 
 ```
 note over User, PlayerTypeView: Choice Host
@@ -83,7 +100,7 @@ end
 FleetPositioningView->-FleetPositioningView: dispose()
 ```
 
-#### Guest
+##### Guest
 
 ```
 note over User, PlayerTypeView: Choice Guest

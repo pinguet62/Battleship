@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import fr.pinguet62.battleship.socket.dto.AttackDto;
@@ -20,13 +21,15 @@ final class GuestThreadSocket extends AbstractThreadSocket {
      *            The server {@link InetAddress}.
      * @param port
      *            The port of {@link Socket}.
+     * @throws SocketException
+     *             Error during {@link ServerSocket} creation.
      */
     public GuestThreadSocket(final InetAddress inetAddress, final int port) {
 	try {
 	    socket = new Socket(inetAddress, port);
 	    System.out.println("Connected to host.");
 	} catch (IOException exception) {
-	    throw new SocketException("Error during serveur socket creation.",
+	    throw new SocketException("Error during server socket creation.",
 		    exception);
 	}
     }

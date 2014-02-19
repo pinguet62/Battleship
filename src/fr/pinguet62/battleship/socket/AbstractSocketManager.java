@@ -35,7 +35,7 @@ public abstract class AbstractSocketManager {
     }
 
     /**
-     * Connection.
+     * Method of connection to host or waiting for guest.
      * 
      * @param method
      *            The {@link Runnable} to execute after connection.

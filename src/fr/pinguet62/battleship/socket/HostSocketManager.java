@@ -19,18 +19,20 @@ public final class HostSocketManager extends AbstractSocketManager {
     }
 
     /**
-     * Create the {@link ServerSocket} into {@link HostThreadSocket} and wait
-     * guest connection.
+     * Create the {@link HostThreadSocket} and {@link ServerSocket}.<br />
+     * Start the {@link HostThreadSocket}.<br />
+     * When guest connected, execute the method.
      * 
      * @param onConnected
      *            The {@link Runnable} to execute after guest connection.
      */
+    @Override
     public void connect(final Runnable onConnected) {
 	HostThreadSocket hostThreadSocket = new HostThreadSocket(inetAddress,
 		port);
+	hostThreadSocket.setOnConnectedListener(onConnected);
+	hostThreadSocket.start();
 	threadSocket = hostThreadSocket;
-	hostThreadSocket.setOnGuestConnectedListener(onConnected);
-	threadSocket.start();
     }
 
 }

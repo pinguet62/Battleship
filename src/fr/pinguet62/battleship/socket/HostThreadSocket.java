@@ -14,7 +14,7 @@ import fr.pinguet62.battleship.socket.dto.PositionsDto;
 final class HostThreadSocket extends AbstractThreadSocket {
 
     /** The {@link Runnable} to execute after guest connection. */
-    private Runnable onGuestConnectedListener;
+    private Runnable onConnectedListener;
 
     /** The server {@link Socket}. */
     private final ServerSocket socketServeur;
@@ -46,8 +46,8 @@ final class HostThreadSocket extends AbstractThreadSocket {
 	    System.out.println("Waiting guest connection...");
 	    socket = socketServeur.accept();
 	    System.out.println("Guest connected.");
-	    if (onGuestConnectedListener != null)
-		onGuestConnectedListener.run();
+	    if (onConnectedListener != null)
+		onConnectedListener.run();
 	} catch (IOException exception) {
 	    throw new SocketException("Error creating client socket.",
 		    exception);
@@ -96,11 +96,11 @@ final class HostThreadSocket extends AbstractThreadSocket {
     /**
      * Sets the {@link Runnable} to execute after guest connection.
      * 
-     * @param onGuestConnected
+     * @param onConnected
      *            The {@link Runnable} to execute.
      */
-    public void setOnGuestConnectedListener(final Runnable onGuestConnected) {
-	onGuestConnectedListener = onGuestConnected;
+    public void setOnConnectedListener(final Runnable onConnected) {
+	onConnectedListener = onConnected;
     }
 
 }
