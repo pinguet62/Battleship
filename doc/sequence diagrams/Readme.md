@@ -7,3 +7,32 @@ Sequence diagrams
 
 The UML diagrams are drawed with [Dia](https://wiki.gnome.org/Apps/Dia).
 
+## Diagrams
+
+### Player type
+
+[<img style="max-width: 100%" src="img/PlayerType.png" />](img/PlayerType.png)
+
+### Parameters
+
+#### Host parameters
+
+[<img style="max-width: 100%" src="img/HostParameters.png" />](img/HostParameters.png)
+
+1. Entering server parameters;
+* Creation and start of server;
+* Waiting guest;
+* Sending game parameters;
+* Fleet positioning view display.
+
+#### Guest parameters
+
+[<img style="max-width: 100%" src="img/GuestParameters.png" />](img/GuestParameters.png)
+
+1. Entering server parameters;
+* Reception of game parameters;
+* Fleet positioning view display.
+
+### Fleet positioning
+
+[<img style="max-width: 100%" src="img/FleetPositioning.png" />](img/FleetPositioning.png)
