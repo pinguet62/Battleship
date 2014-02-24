@@ -1,8 +1,6 @@
 package fr.pinguet62.battleship.view.parameters;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,60 +107,53 @@ public final class HostParametersView extends Frame {
 	add(buttonPanel);
 	// -- Ok
 	JButton okButton = new JButton("Ok");
-	okButton.addActionListener(new ActionListener() {
+	okButton.addActionListener((event) -> {
 	    /** Click on "Ok" button. */
-	    @Override
-	    public void actionPerformed(final ActionEvent e) {
-		// Validation
-		int nbBoats = 0;
-		for (BoatClassSpinner boatClassSpinner : boatClassSpinners)
-		    nbBoats += boatClassSpinner.getIntValue();
-		if (nbBoats == 0)
-		    return;
+	    // Validation
+	    int nbBoats = 0;
+	    for (BoatClassSpinner boatClassSpinner : boatClassSpinners)
+		nbBoats += boatClassSpinner.getIntValue();
+	    if (nbBoats == 0)
+		return;
 
-		// Boat entries
-		Collection<BoatEntry> boatEntries = new ArrayList<>();
-		for (BoatClassSpinner boatClassSpinner : boatClassSpinners) {
-		    int number = boatClassSpinner.getIntValue();
-		    if (0 < number) {
-			BoatEntry boatEntry = new BoatEntry(boatClassSpinner
-				.getBoatClass(), boatClassSpinner.getIntValue());
-			boatEntries.add(boatEntry);
-		    }
+	    // Boat entries
+	    Collection<BoatEntry> boatEntries = new ArrayList<>();
+	    for (BoatClassSpinner boatClassSpinner : boatClassSpinners) {
+		int number = boatClassSpinner.getIntValue();
+		if (0 < number) {
+		    BoatEntry boatEntry = new BoatEntry(boatClassSpinner
+			    .getBoatClass(), boatClassSpinner.getIntValue());
+		    boatEntries.add(boatEntry);
 		}
-
-		// Game initialization
-		final Game game = new Game(PlayerType.HOST);
-		game.init(new ParametersDto((int) valueWidthSize.getValue(),
-			(int) valueHeightSize.getValue(), boatEntries));
-
-		// Next view: WaitingView
-		dispose();
-		final WaitingView waitConnexionView = new WaitingView(
-			"Waiting guest connexion...");
-
-		// Run host server
-		game.getSocketManager().setPort((Integer) portValue.getValue());
-		game.getSocketManager().connect(new Runnable() {
-		    /** {@link Runnable} to execute after guest connection. */
-		    @Override
-		    public void run() {
-			// Send parameters to guest
-			ParametersDto parameters = new ParametersDto(game
-				.getWidth(), game.getHeight(), game
-				.getBoatEntries());
-			game.getSocketManager().send(parameters);
-
-			// Next view: FleetPositioningView
-			waitConnexionView.dispose();
-			new FleetPositioningView(game);
-		    }
-		});
 	    }
+
+	    // Game initialization
+	    Game game = new Game(PlayerType.HOST);
+	    game.init(new ParametersDto((int) valueWidthSize.getValue(),
+		    (int) valueHeightSize.getValue(), boatEntries));
+
+	    // Next view: WaitingView
+	    dispose();
+	    WaitingView waitConnexionView = new WaitingView(
+		    "Waiting guest connexion...");
+
+	    // Run host server
+	    game.getSocketManager().setPort((Integer) portValue.getValue());
+	    game.getSocketManager().connect(() -> {
+		/** {@link Runnable} to execute after guest connection. */
+		// Send parameters to guest
+		    ParametersDto parameters = new ParametersDto(game
+			    .getWidth(), game.getHeight(), game
+			    .getBoatEntries());
+		    game.getSocketManager().send(parameters);
+
+		    // Next view: FleetPositioningView
+		    waitConnexionView.dispose();
+		    new FleetPositioningView(game);
+		});
 	});
 	buttonPanel.add(okButton);
 
 	setVisible(true);
     }
-
 }

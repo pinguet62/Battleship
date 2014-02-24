@@ -1,8 +1,5 @@
 package fr.pinguet62.battleship.view;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 
@@ -22,26 +19,18 @@ public final class PlayerTypeView extends Frame {
 
 	// - Host
 	JButton hostButton = new JButton("Host");
-	hostButton.addActionListener(new ActionListener() {
-	    /** Click on "Host" button. */
-	    @Override
-	    public void actionPerformed(final ActionEvent e) {
-		System.out.println("HOST");
-		new HostParametersView();
-		dispose();
-	    }
+	hostButton.addActionListener((event) -> {
+	    System.out.println("HOST");
+	    new HostParametersView();
+	    dispose();
 	});
 	add(hostButton);
 	// - Guest
 	JButton guestButton = new JButton("Guest");
-	guestButton.addActionListener(new ActionListener() {
-	    /** Click on "Guest" button. */
-	    @Override
-	    public void actionPerformed(final ActionEvent e) {
-		System.out.println("GUEST");
-		new GuestParametersView();
-		dispose();
-	    }
+	guestButton.addActionListener((event) -> {
+	    System.out.println("GUEST");
+	    new GuestParametersView();
+	    dispose();
 	});
 	add(guestButton);
 

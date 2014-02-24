@@ -16,7 +16,6 @@ import fr.pinguet62.battleship.model.grid.Coordinates;
 import fr.pinguet62.battleship.socket.dto.AttackDto;
 import fr.pinguet62.battleship.view.Frame;
 import fr.pinguet62.battleship.view.game.BoxView.State;
-import fr.pinguet62.utils.Consumer;
 
 /** Duel view. */
 public final class GameView extends Frame implements ActionListener {
@@ -55,27 +54,26 @@ public final class GameView extends Frame implements ActionListener {
 
 	this.game = game;
 	myTurn = game.getPlayerType().isHost();
-	game.getSocketManager().setOnAttackReceivedListener(
-		new Consumer<AttackDto>() {
-		    /** {@link AttackDto} received. */
-		    @Override
-		    public void accept(final AttackDto attackDto) {
-			Coordinates coordinates = attackDto.getCoordinates();
+	game.getSocketManager()
+		.setOnAttackReceivedListener(
+			(attackDto) -> {
+			    /** {@link AttackDto} received. */
+			    Coordinates coordinates = attackDto
+				    .getCoordinates();
 
-			// Update my fleet
-			AttackResult attackResult = game.getMyFleet()
-				.getBox(coordinates).attack();
-			State newState = attackResult
-				.equals(AttackResult.FAILED) ? State.FAILED
-				: State.TOUCHED;
-			myBoxViewss[coordinates.getY()][coordinates.getX()]
-				.setState(newState);
+			    // Update my fleet
+			    AttackResult attackResult = game.getMyFleet()
+				    .getBox(coordinates).attack();
+			    State newState = attackResult
+				    .equals(AttackResult.FAILED) ? State.FAILED
+				    : State.TOUCHED;
+			    myBoxViewss[coordinates.getY()][coordinates.getX()]
+				    .setState(newState);
 
-			updateScores();
+			    updateScores();
 
-			myTurn = true;
-		    }
-		});
+			    myTurn = true;
+			});
 
 	// Layout
 	setLayout(new GridLayout(1, 2, 5, 0));
@@ -185,6 +183,19 @@ public final class GameView extends Frame implements ActionListener {
 	myTurn = false;
     }
 
+    /**
+     * Show result and quit game.
+     * 
+     * @param message
+     *            The message to show.
+     */
+    private void end(final String message) {
+	dispose();
+	JOptionPane.showMessageDialog(this, message, "End",
+		JOptionPane.INFORMATION_MESSAGE);
+	game.getSocketManager().stop();
+    }
+
     /** Update {@link Score} of 2 players. */
     private void updateScores() {
 	Score opponentScore = game.getOpponentFleet().getScore();
@@ -204,19 +215,6 @@ public final class GameView extends Frame implements ActionListener {
 	    end("Looser!");
 	    return;
 	}
-    }
-
-    /**
-     * Show result and quit game.
-     * 
-     * @param message
-     *            The message to show.
-     */
-    private void end(final String message) {
-	dispose();
-	JOptionPane.showMessageDialog(this, message, "End",
-		JOptionPane.INFORMATION_MESSAGE);
-	game.getSocketManager().stop();
     }
 
 }

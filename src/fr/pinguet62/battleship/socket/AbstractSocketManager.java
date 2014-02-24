@@ -3,12 +3,12 @@ package fr.pinguet62.battleship.socket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.function.Consumer;
 
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.socket.dto.AttackDto;
 import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.socket.dto.PositionsDto;
-import fr.pinguet62.utils.Consumer;
 
 /** Interacts with {@link AbstractThreadSocket}. */
 public abstract class AbstractSocketManager {

@@ -21,7 +21,6 @@ import fr.pinguet62.battleship.view.Frame;
 import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.game.GameView;
 import fr.pinguet62.battleship.view.positioning.SelectCase.State;
-import fr.pinguet62.utils.Consumer;
 
 /** View used to place {@link Boat}s in grid. */
 public final class FleetPositioningView extends Frame implements ActionListener {
@@ -105,7 +104,7 @@ public final class FleetPositioningView extends Frame implements ActionListener 
      * My {@link PositionsDto}.<br />
      * Store my {@link BoatPosition}s before sending to opponent.
      */
-    private PositionsDto myPositions = new PositionsDto(
+    private final PositionsDto myPositions = new PositionsDto(
 	    new ArrayList<BoatPosition>());
 
     /** If i have been received the opponent's {@link PositionsDto}. */
@@ -131,31 +130,26 @@ public final class FleetPositioningView extends Frame implements ActionListener 
 
 	// Positions reception
 	game.getSocketManager().setOnPositionsReceivedListener(
-		new Consumer<PositionsDto>() {
-		    /** Method to execute after {@link PositionsDto} reception. */
-		    @Override
-		    public void accept(final PositionsDto positionsDto) {
-			// Update opponent fleet
-			for (BoatPosition boatPosition : positionsDto
-				.getBoatPositions()) {
-			    Class<? extends Boat> boatClass = boatPosition
-				    .getBoatClass();
-			    Coordinates first = boatPosition
-				    .getFirstCoordinate();
-			    Coordinates last = boatPosition.getLastCoordinate();
-			    game.getOpponentFleet().insertBoat(boatClass,
-				    first, last);
-			}
+	/** Method to execute after {@link PositionsDto} reception. */
+	(positionsDto) -> {
+	    // Update opponent fleet
+		for (BoatPosition boatPosition : positionsDto
+			.getBoatPositions()) {
+		    Class<? extends Boat> boatClass = boatPosition
+			    .getBoatClass();
+		    Coordinates first = boatPosition.getFirstCoordinate();
+		    Coordinates last = boatPosition.getLastCoordinate();
+		    game.getOpponentFleet().insertBoat(boatClass, first, last);
+		}
 
-			opponentPositionsReceived = true;
+		opponentPositionsReceived = true;
 
-			// Next view: GameView
-			if (positionsWaitingView != null) {
-			    positionsWaitingView.dispose();
-			    new GameView(game);
-			}
-		    }
-		});
+		// Next view: GameView
+		if (positionsWaitingView != null) {
+		    positionsWaitingView.dispose();
+		    new GameView(game);
+		}
+	    });
 
 	// - Boats
 	boatsPanel = new JPanel();
@@ -163,17 +157,15 @@ public final class FleetPositioningView extends Frame implements ActionListener 
 	add(boatsPanel);
 	for (BoatEntry boatEntry : game.getBoatEntries())
 	    for (int i = 0; i < boatEntry.getNumber(); i++) {
-		final BoatView boatView = new BoatView(boatEntry.getBoatClass());
-		boatView.addActionListener(new ActionListener() {
-		    /** Click on a {@link BoatView} */
-		    @Override
-		    public void actionPerformed(final ActionEvent e) {
-			// Save selection
-			selectedBoatView = boatView;
-			// Disable buttons
-			for (BoatView boatView : boatViews)
-			    boatView.setEnabled(false);
-		    }
+		BoatView boatView = new BoatView(boatEntry.getBoatClass());
+		boatView.addActionListener(
+		/** Click on a {@link BoatView} */
+		(event) -> {
+		    // Save selection
+		    selectedBoatView = boatView;
+		    // Disable buttons
+		    for (BoatView boatViewToEnable : boatViews)
+			boatViewToEnable.setEnabled(false);
 		});
 		boatViews.add(boatView);
 		boatsPanel.add(boatView);

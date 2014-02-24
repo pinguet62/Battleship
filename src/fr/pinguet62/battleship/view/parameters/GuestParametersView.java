@@ -20,11 +20,9 @@ import javax.swing.SpinnerNumberModel;
 import fr.pinguet62.battleship.model.Game;
 import fr.pinguet62.battleship.model.PlayerType;
 import fr.pinguet62.battleship.socket.SocketException;
-import fr.pinguet62.battleship.socket.dto.ParametersDto;
 import fr.pinguet62.battleship.view.Frame;
 import fr.pinguet62.battleship.view.WaitingView;
 import fr.pinguet62.battleship.view.positioning.FleetPositioningView;
-import fr.pinguet62.utils.Consumer;
 
 /** The view parameters for {@link PlayerType#GUEST}. */
 public final class GuestParametersView extends Frame {
@@ -90,40 +88,36 @@ public final class GuestParametersView extends Frame {
 		game.getSocketManager().setInetAddress(inetAddress);
 		game.getSocketManager().setPort((int) portValue.getValue());
 		try {
-		    game.getSocketManager().connect(new Runnable() {
-			/** Method to execute after connection to host. */
-			@Override
-			public void run() {
-			    // Next view: WaitingView
-			    dispose();
-			    final WaitingView waitParametersView = new WaitingView(
-				    "Waiting host parameters...");
+		    game.getSocketManager()
+			    .connect(() -> {
+				/** Method to execute after connection to host. */
+				// Next view: WaitingView
+				    dispose();
+				    final WaitingView waitParametersView = new WaitingView(
+					    "Waiting host parameters...");
 
-			    // Wait parameters method
-			    game.getSocketManager()
-				    .setOnParametersReceivedListener(
-					    new Consumer<ParametersDto>() {
-						/**
-						 * Method to execute after
-						 * {@link ParametersDto}
-						 * reception.
-						 */
-						@Override
-						public void accept(
-							final ParametersDto parametersDto) {
-						    // Game initialization
-						    game.init(parametersDto);
+				    // Wait parameters method
+				    game.getSocketManager()
+					    .setOnParametersReceivedListener(
+						    (parametersDto) -> {
+							/**
+							 * Method to execute
+							 * after
+							 * {@link ParametersDto}
+							 * reception.
+							 */
+							// Game
+							// initialization
+							game.init(parametersDto);
 
-						    // Next view:
-						    // FleetPositioningView
-						    waitParametersView
-							    .dispose();
-						    new FleetPositioningView(
-							    game);
-						}
-					    });
-			}
-		    });
+							// Next view:
+							// FleetPositioningView
+							waitParametersView
+								.dispose();
+							new FleetPositioningView(
+								game);
+						    });
+				});
 		} catch (SocketException exception) {
 		    JOptionPane.showMessageDialog(parent,
 			    "Unable to connect to host.", "Error",
